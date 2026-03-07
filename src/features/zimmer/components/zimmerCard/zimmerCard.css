@@ -1,0 +1,79 @@
+.zimmer-card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    transition: transform 0.2s ease;
+}
+
+.zimmer-card:hover {
+    transform: translateY(-5px); 
+}
+
+.zimmer-image, .no-image-placeholder {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.no-image-placeholder {
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+}
+
+.card-content {
+    padding: 15px;
+    direction: rtl;
+}
+
+.card-content h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+}
+
+.price-text {
+    font-weight: bold;
+    margin: 10px 0;
+    color: #333;
+}
+
+.card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.fav-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.delete-btn {
+    width: 100%;
+    padding: 10px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 500;
+}
+
+.delete-btn:not(:disabled) {
+    background-color: #dc3545;
+    cursor: pointer;
+}
+
+.delete-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
