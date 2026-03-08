@@ -1,3 +1,6 @@
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetZimmersQuery } from '../../redux/zimmerApi';
@@ -41,9 +44,18 @@ const facilitiesIconsMap: Record<number, React.ReactNode> = {
   [FacilityValues.Sauna]: <Icons.FaHotTub />,
 };
 
+const yellowIcon = new L.Icon({
+  iconUrl:"https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+  iconSize:[32,32],
+  iconAnchor:[16,32]
+});
+
 const ZimmerDetails: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
+  const [mapVisible, setMapVisible] = useState(false);
+  const [mapType, setMapType] = useState("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: zimmers } = useGetZimmersQuery();
@@ -56,7 +68,6 @@ const ZimmerDetails: React.FC = () => {
 
   const images = Array.isArray(zimmer.arrImages) ? zimmer.arrImages : [];
   const facilitiesNum = typeof zimmer.facilities === 'string' ? parseInt(zimmer.facilities) : zimmer.facilities;
-
   const facilitiesArray = typeof facilitiesNum === 'number'
     ? (Object.values(FacilityValues) as number[])
         .filter((value) => (facilitiesNum & value) === value)
@@ -71,6 +82,7 @@ const ZimmerDetails: React.FC = () => {
       <button className="back-btn" onClick={() => navigate(-1)}>⬅ חזרה</button>
 
       <div className="zimmer-main">
+        {/* גלריית תמונות */}
         <div className="zimmer-gallery">
           {images.length > 0 ? (
             <>
@@ -108,6 +120,7 @@ const ZimmerDetails: React.FC = () => {
           </div>
         )}
 
+        {/* פרטי הצימר */}
         <div className="zimmer-info">
           <h1 className="zimmer-name">{zimmer.nameZimmer}</h1>
           <p className="zimmer-city">{zimmer.city}</p>
@@ -122,6 +135,34 @@ const ZimmerDetails: React.FC = () => {
               </div>
             ))}
           </div>
+
+<button 
+  className="show-map-btn"
+  onClick={() => setMapVisible(prev => !prev)}
+>
+   הצג במפה
+</button>
+
+{mapVisible && (
+  <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
+    <button onClick={() => setMapType("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")}>רגילה</button>
+    <button onClick={() => setMapType("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png")}>לווין</button>
+    <button onClick={() => setMapType("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png")}>היברידית</button>
+  </div>
+)}
+
+{mapVisible && (
+  <div className="zimmer-inline-map" style={{ marginTop: "5px", borderRadius:"8px", overflow:"hidden", height:"300px" }}>
+    <MapContainer
+      center={[zimmer.latitude, zimmer.longitude]}
+      zoom={14}
+      style={{ height: "100%", width: "100%" }}
+    >
+      <TileLayer url={mapType} />
+      <Marker position={[zimmer.latitude, zimmer.longitude]} icon={yellowIcon} />
+    </MapContainer>
+  </div>
+)}
 
           <p className="zimmer-description">{zimmer.description}</p>
           <button className="booking-btn">הזמן עכשיו</button>

@@ -4,50 +4,84 @@ import Navbar from './features/user/components/navbar/navbar';
 import AdminPanel from './features/admin/components/adminPanel/adminPanel';
 import ProtectedRoute from './features/admin/components/protectedRoute';
 import { useSelector } from 'react-redux';
-import {type RootState } from './app/store';
+import { type RootState } from './app/store';
 import ZimmerList from './features/zimmer/components/zimmerList/zimmerList';
 import MyZimmers from './features/zimmer/components/myZimmers';
 import ZimmerDetails from './features/zimmer/components/zimmerDetails/zimmerDetails';
+import ZimmerSearch from './features/zimmer/components/zimmerSearch/zimmerSearch';
+import ZimmerMap from './features/zimmer/components/zimmerMap/zimmerMap';
+import { useSearchZimmersQuery, ZimmerSearchDto } from './features/zimmer/redux/zimmerApi';
+import { useState } from 'react';
 
 function App() {
+
   const { currentUser } = useSelector((state: RootState) => state.user);
 
-  return (
-  <BrowserRouter>
-    <Navbar/>
-    
-    <Routes>
-      <Route
-      path="/"
-      element={
-  <div className="App">
-      <header >
-      <h1>מערכת הזמנת צימרים</h1>
-      </header>
-      <ZimmerList />
-  </div>
-  }
-  />
-  <Route path="/admin" element={
-    <ProtectedRoute currentUser={currentUser} allowedRoles={["Admin"]}>
-      <AdminPanel />
-    </ProtectedRoute>
-  } />
+  const [searchParams, setSearchParams] = useState<ZimmerSearchDto>({});
 
-  <Route
-  path="/my-zimmers"
-  element={
-    <ProtectedRoute currentUser={currentUser} allowedRoles={["Owner"]}>
-      <MyZimmers />
-    </ProtectedRoute>
-  }
-/>
-  <Route path="/" element={<ZimmerList />} />
-  <Route path="/zimmer/:id" element={<ZimmerDetails />} />
-  </Routes>
-  </BrowserRouter>
-  );
+  const { data: zimmers } = useSearchZimmersQuery(searchParams);
+
+  return (
+    <BrowserRouter>
+
+      <Navbar />
+
+      <Routes>
+
+        <Route
+          path="/"
+          element={
+            <div className="App">
+
+              <header>
+                <h1>מערכת הזמנת צימרים</h1>
+              </header>
+
+              <ZimmerSearch onSearch={setSearchParams} />
+              {zimmers && zimmers.length > 0 && (
+                <div style={{ marginTop: "20px" }}>
+                  <ZimmerMap zimmers={zimmers} />
+                </div>
+              )}
+
+              <ZimmerList zimmers={zimmers ?? []} />
+
+            </div>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute currentUser={currentUser} allowedRoles={["Admin"]}>
+              <AdminPanel />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-zimmers"
+          element={
+            <ProtectedRoute currentUser={currentUser} allowedRoles={["Owner"]}>
+              <MyZimmers />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/zimmer/:id" element={<ZimmerDetails />} />
+
+        {zimmers && (
+          <Route path="/zimmer-map/:id" element={<ZimmerMap zimmers={zimmers} />} />
+        )}
+
+        {zimmers && (
+          <Route path="/zimmer-map" element={<ZimmerMap zimmers={zimmers} />} />
+        )}
+
+      </Routes>
+
+    </BrowserRouter>
+  )
 }
 
-export default App;
-
+export default App

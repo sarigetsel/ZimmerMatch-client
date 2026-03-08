@@ -1,19 +1,42 @@
-import { useGetZimmersQuery } from "../../redux/zimmerApi";
 import ZimmerCard from '../zimmerCard/zimmerCard'
 import './zimmerList.css';
 
-const ZimmerList = () => {
-    const { data: zimmers, isLoading, error } = useGetZimmersQuery();
+interface Zimmer {
+  zimmerId: number;
+  ownerId: number;
+  nameZimmer: string;
+  description: string;
+  city: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  numRooms: number;
+  pricePerNight: number;
+  createdAt: string;
+  facilities: string;
+  arrImages?: string[];
+}
 
-    if (isLoading) return <div className="loading-message"> טוען צימרים...</div>;
-    if (error) return <div className="error-message">שגיאה בטעינת הנתונים</div>;
+interface Props {
+  zimmers: Zimmer[];
+}
 
-    return (
-      <div className="zimmer-list-container"> 
-      {zimmers?.map((zimmer) => (
+const ZimmerList = ({ zimmers }: Props) => {
+
+  if (!zimmers) return <div className="loading-message"> טוען צימרים...</div>;
+
+  if (!zimmers || zimmers.length === 0) {
+  return <h2 style={{ textAlign: "center" }}>אין תוצאות</h2>;
+}
+  return (
+    <div className="zimmer-list-container">
+
+      {zimmers.map((zimmer) => (
         <ZimmerCard key={zimmer.zimmerId} zimmer={zimmer} />
       ))}
-      </div>
-    );
+
+    </div>
+  );
 };
+
 export default ZimmerList;
