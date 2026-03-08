@@ -1,0 +1,52 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  direction: rtl; 
+}
+
+.nav-logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-welcome {
+  font-weight: 500;
+  margin-left: 15px;
+}
+
+
+.nav-btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.nav-btn:active {
+  transform: scale(0.96);
+}
+
+.nav-btn:hover {
+  opacity: 0.85;
+}
+
+.btn-login { background-color: #28a745; color: #fff; }
+.btn-register { background-color: #007bff; color: #fff; }
+.btn-logout { background-color: #dc3545; color: #fff; }
+.btn-admin { background-color: #6c757d; color: #fff; }
+.btn-owner { background-color: #17a2b8; color: #fff; }
+.btn-my-zimmers { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; }

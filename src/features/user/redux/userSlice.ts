@@ -1,6 +1,4 @@
 import { createSlice,type PayloadAction } from '@reduxjs/toolkit';
-//import { type RoleType } from '../../../common/constants/enums';
-
 
 export interface User {
     id: number;

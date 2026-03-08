@@ -1,13 +1,13 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './features/user/components/navbar';
-//import UserList from './features/user/components/userList';
-import AdminPanel from './features/admin/components/adminPanel';
+import Navbar from './features/user/components/navbar/navbar';
+import AdminPanel from './features/admin/components/adminPanel/adminPanel';
 import ProtectedRoute from './features/admin/components/protectedRoute';
 import { useSelector } from 'react-redux';
 import {type RootState } from './app/store';
 import ZimmerList from './features/zimmer/components/zimmerList/zimmerList';
 import MyZimmers from './features/zimmer/components/myZimmers';
+import ZimmerDetails from './features/zimmer/components/zimmerDetails/zimmerDetails';
 
 function App() {
   const { currentUser } = useSelector((state: RootState) => state.user);
@@ -42,6 +42,8 @@ function App() {
     </ProtectedRoute>
   }
 />
+  <Route path="/" element={<ZimmerList />} />
+  <Route path="/zimmer/:id" element={<ZimmerDetails />} />
   </Routes>
   </BrowserRouter>
   );

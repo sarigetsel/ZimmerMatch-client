@@ -1,0 +1,112 @@
+
+.zimmer-details-container {
+  max-width: 1200px;
+  margin: 0 auto; 
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.zimmer-main {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.zimmer-gallery {
+  flex: 1 1 600px;
+}
+
+.main-image {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.thumbnails-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.2s;
+}
+
+.thumbnail.active {
+  border: 2px solid #007bff;
+}
+
+.zimmer-info {
+  flex: 1 1 400px;
+}
+
+.zimmer-facilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.facility {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #f5f5f5;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.booking-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.booking-btn:hover {
+  background-color: #0056b3;
+}
+.facility-icon {
+  font-size: 18px;
+}
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-image {
+  max-width: 90%;
+  max-height: 90%;
+  box-shadow: 0 0 10px #000;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 30px;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
