@@ -12,6 +12,8 @@ import ZimmerSearch from './features/zimmer/components/zimmerSearch/zimmerSearch
 import ZimmerMap from './features/zimmer/components/zimmerMap/zimmerMap';
 import { useSearchZimmersQuery, ZimmerSearchDto } from './features/zimmer/redux/zimmerApi';
 import { useState } from 'react';
+import MyBookings from './features/booking/components/guestBooking';
+import  OwnerBookings from './features/booking/components/OwnerBookings';
 
 function App() {
 
@@ -77,6 +79,23 @@ function App() {
         {zimmers && (
           <Route path="/zimmer-map" element={<ZimmerMap zimmers={zimmers} />} />
         )}
+
+        <Route
+         path="/my-bookings"
+         element={
+         <ProtectedRoute currentUser={currentUser} allowedRoles={["Guest"]}>
+         <MyBookings />
+         </ProtectedRoute>
+         }
+         />
+         <Route
+           path="/owner-bookings"
+           element={
+           <ProtectedRoute currentUser={currentUser} allowedRoles={["Owner"]}>
+           <OwnerBookings />
+           </ProtectedRoute>
+          }
+          />
 
       </Routes>
 

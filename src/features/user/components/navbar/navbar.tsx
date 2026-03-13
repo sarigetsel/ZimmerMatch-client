@@ -51,8 +51,19 @@ const Navbar = () => {
                                 {showAddForm && (
                                     <AddZimmer onClose={() => setShowAddForm(false)} />
                                 )}
+                                 <button onClick={() => navigate("/owner-bookings")} className="nav-btn">
+                                   הזמנות
+                                 </button>
                             </>
                         )} 
+                        {currentUser?.role === "Guest" && (
+                               <button 
+                               onClick={() => navigate("/my-bookings")} 
+                               className="nav-btn"
+                                >
+                                ההזמנות שלי
+                                  </button>
+                                )}
                         <button onClick={() => dispatch(logout())} className="nav-btn btn-logout">התנתק</button>
                     </>
                 ) : (
