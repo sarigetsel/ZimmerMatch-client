@@ -7,6 +7,7 @@ import { useGetZimmersQuery } from '../../redux/zimmerApi';
 import './zimmerDetails.css';
 import { FacilityValues, FacilityLabels } from '../../../../common/constants/enums';
 import * as Icons from 'react-icons/fa';
+import ZimmerAvailability from "../../../availability/components/ZimmerAvailability/ZimmerAvailability";
 
 interface Zimmer {
   zimmerId: number;
@@ -120,7 +121,7 @@ const ZimmerDetails: React.FC = () => {
           </div>
         )}
 
-        {/* פרטי הצימר */}
+        
         <div className="zimmer-info">
           <h1 className="zimmer-name">{zimmer.nameZimmer}</h1>
           <p className="zimmer-city">{zimmer.city}</p>
@@ -163,9 +164,12 @@ const ZimmerDetails: React.FC = () => {
     </MapContainer>
   </div>
 )}
-
           <p className="zimmer-description">{zimmer.description}</p>
-          <button className="booking-btn">הזמן עכשיו</button>
+          <ZimmerAvailability
+            zimmerId={zimmer.zimmerId}
+            pricePerNight={zimmer.pricePerNight}
+             zimmer={zimmer} 
+          />
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ export const bookingApi = createApi({
     }
   }),
 
-  tagTypes: ["booking"],
+    tagTypes: ["booking", "availability"],
 
   endpoints: (builder) => ({
 
@@ -33,14 +33,24 @@ export const bookingApi = createApi({
       providesTags: ["booking"]
     }),
 
-    addBooking: builder.mutation<Booking, FormData>({
-      query: (data) => ({
-        url: "/",
-        method: "POST",
-        body: data
-      }),
-      invalidatesTags: ["booking"]
-    }),
+  addBooking: builder.mutation<Booking, {
+  userId: number,
+  userName: string,
+  zimmerId: number,
+  zimmerName: string,
+  startDate: string,
+  endDate: string,
+  totalPrice: number,
+  status: number
+}>({
+  query: (data) => ({
+    url: "/",
+    method: "POST",
+    body: data,
+    headers: { "Content-Type": "application/json" }
+  }),
+  invalidatesTags: ["booking", "availability"]
+}),
 
     updateBooking: builder.mutation<Booking, { id: number; data: Booking }>({
       query: ({ id, data }) => ({
