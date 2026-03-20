@@ -95,8 +95,20 @@ export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: 
 
   const confirmBooking = async () => {
     if (!range || !user) return;
+      console.log("Booking payload being sent:", {
+    userId: user.id,
+    userName: user.name,
+    zimmerId,
+    zimmerName: zimmer.nameZimmer,
+    startDate: range[0].toISOString(),
+    endDate: range[1].toISOString(),
+    totalPrice,
+    status: 1
+  });
+
     try {
-      await addBooking({
+      const result = await addBooking({
+        
         userId: user.id,
         userName: user.name,
         zimmerId,
@@ -104,8 +116,10 @@ export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: 
         startDate: range[0].toISOString(),
         endDate: range[1].toISOString(),
         totalPrice,
-        status: 0
+        status: 1
       }).unwrap();
+        console.log("Frontend received from API:", result); // <-- הדפס כאן
+
       alert("ההזמנה בוצעה בהצלחה!");
       setRange(null);
       setModalOpen(false);

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import UserManagement from '../userManagement';
 import ZimmerManagement from '../zimmerManagement';
-import './AdminPanel.css'; // ייבוא ה-CSS
+import AdminBookings from '../BookingManagement';
+
+import './AdminPanel.css';
 
 const AdminPanel = () => {
-  const [tab, setTab] = useState<'users' | 'zimmers'>('users');
+  const [tab, setTab] = useState<'users' | 'zimmers' | 'bookings'>('users');
 
   return (
     <div className="admin-container">
@@ -23,11 +25,18 @@ const AdminPanel = () => {
         >
           צימרים
         </button>
+        <button
+          className={`tab-button ${tab === 'bookings' ? 'active' : ''}`}
+          onClick={() => setTab('bookings')}
+        >
+          הזמנות
+        </button>
       </div>
 
       <div className="management-content">
         {tab === 'users' && <UserManagement />}
         {tab === 'zimmers' && <ZimmerManagement />}
+        {tab === 'bookings' && <AdminBookings />}
       </div>
     </div>
   );
