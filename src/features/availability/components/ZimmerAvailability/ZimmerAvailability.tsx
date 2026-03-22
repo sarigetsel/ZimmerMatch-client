@@ -11,7 +11,7 @@ interface Zimmer {
   zimmerId: number;
   nameZimmer: string;
   pricePerNight: number;
-  
+  ownerId: number; 
 }
 
 interface Props {
@@ -21,7 +21,7 @@ interface Props {
 }
 
 export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: Props) {
-  const { data: days } = useGetAvailabilityByZimmerQuery(zimmerId);
+  const { data: days, refetch } = useGetAvailabilityByZimmerQuery(zimmerId);
   const [blockDay] = useBlockDayMutation();
   const [addBooking] = useAddBookingMutation();
   const user = useSelector((state: RootState) => state.user.currentUser);
@@ -40,18 +40,17 @@ export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: 
     return date < today;
   };
 
-  
   const tileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view !== "month") return null;
-    if (isPast(date)) return   <abbr title="עבר"></abbr>;
+    if (isPast(date)) return <abbr title="עבר"></abbr>;
     if (isBooked(date)) return <abbr title="תפוס"></abbr>;
     return null;
   };
 
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view !== "month") return "";
-    if (isPast(date)) return "blocked-day";   
-    if (isBooked(date)) return "booked-day"; 
+    if (isPast(date)) return "blocked-day";
+    if (isBooked(date)) return "booked-day";
     if (range && date >= range[0] && date <= range[1]) return "selected-day";
     return "";
   };
@@ -75,7 +74,7 @@ export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: 
   };
 
   const onClickDayHandler = (date: Date) => {
-    if (!user) return;
+    if (!user || !(user.role === "Guest" || user.role === "Owner")) return;
 
     if (user.role === "Guest" && (isPast(date) || isBooked(date))) return;
     if (user.role === "Owner" && isPast(date)) return;
@@ -88,27 +87,17 @@ export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: 
     }
   };
 
+  
   const book = () => {
-    if (!range) return;
-    setModalOpen(true); 
+    if (!range || !user || user.role !== "Guest") return;
+    setModalOpen(true);
   };
 
   const confirmBooking = async () => {
-    if (!range || !user) return;
-      console.log("Booking payload being sent:", {
-    userId: user.id,
-    userName: user.name,
-    zimmerId,
-    zimmerName: zimmer.nameZimmer,
-    startDate: range[0].toISOString(),
-    endDate: range[1].toISOString(),
-    totalPrice,
-    status: 1
-  });
+    if (!range || !user || user.role !== "Guest") return;
 
     try {
-      const result = await addBooking({
-        
+      await addBooking({
         userId: user.id,
         userName: user.name,
         zimmerId,
@@ -116,82 +105,109 @@ export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: 
         startDate: range[0].toISOString(),
         endDate: range[1].toISOString(),
         totalPrice,
-        status: 1
+        status: 1,
       }).unwrap();
-        console.log("Frontend received from API:", result); // <-- הדפס כאן
 
       alert("ההזמנה בוצעה בהצלחה!");
       setRange(null);
       setModalOpen(false);
+      await refetch();
     } catch (err: unknown) {
       console.error(err);
       alert("שגיאה ביצירת הזמנה: " + JSON.stringify(err));
     }
   };
 
-const blockSelected = async () => {
-  if (!range || !user || user.role !== "Owner") return;
-  const dates = getDateArray(range[0], range[1]);
+  const blockSelected = async () => {
+    if (!range || !user || user.role !== "Owner") return;
 
-  for (const d of dates) {
-    if (!isPast(d)) {
-      await blockDay({
-        zimmerId,
-        startDate: d.toISOString(),
-        endDate: d.toISOString(),
-        isBooked: true
-      }).unwrap();
+    if (zimmer.ownerId !== user.id) {
+      alert("אין לך אפשרות לחסום ימים בצימר זה. זה לא צימר שלך.");
+      setRange(null);
+      return;
     }
-  }
 
-  alert("הימים נחסמו!");
-  setRange(null);
-};
+    const dates = getDateArray(range[0], range[1]);
 
+    for (const d of dates) {
+      if (!isPast(d)) {
+        try {
+          await blockDay({
+            zimmerId,
+            startDate: d.toISOString(),
+            endDate: d.toISOString(),
+            isBooked: true,
+          }).unwrap();
+        } catch (err: unknown) {
+          console.error("שגיאה בעת חסימת יום:", err);
+          alert("שגיאה בחסימת ימים: " + JSON.stringify(err));
+          return;
+        }
+      }
+    }
+
+    await refetch();
+    alert("הימים נחסמו!");
+    setRange(null);
+  };
 
   return (
     <div className="calendar-wrapper">
-      <h3>יומן זמינות</h3>
-
-      <Calendar
-        selectRange
-        value={range}
-        onClickDay={onClickDayHandler}
-        tileClassName={tileClassName}
-        tileContent={tileContent}
-      />
-
-      {range && (
-        <div className="booking-info">
-          <p>מתאריך: {range[0].toLocaleDateString()}</p>
-          <p>עד תאריך: {range[1].toLocaleDateString()}</p>
-          <p>לילות: {nightsCount()}</p>
-          <p>מחיר ללילה: ₪{pricePerNight}</p>
-          <p>סה"כ: ₪{totalPrice}</p>
-        </div>
-      )}
-
-      <div className="booking-buttons">
-        {user?.role === "Guest" && (
-          <button className="book-btn" onClick={book}>הזמן עכשיו</button>
-        )}
-        {user?.role === "Owner" && (
-          <button className="block-btn" onClick={blockSelected}>חסום ימים</button>
-        )}
+      <div className="calendar-box">
+        <Calendar
+          selectRange
+          value={range}
+          onClickDay={onClickDayHandler}
+          tileClassName={tileClassName}
+          tileContent={tileContent}
+        />
       </div>
 
-      {modalOpen && (
+      {user && (user.role === "Guest" || user.role === "Owner") ? (
+        <div className="booking-summary">
+          {range && user.role === "Guest" && (
+            <>
+              <h3>סיכום הזמנה</h3>
+              <p>📅 מתאריך: {range[0].toLocaleDateString()}</p>
+              <p>📅 עד תאריך: {range[1].toLocaleDateString()}</p>
+              <p>🌙 לילות: {nightsCount()}</p>
+              <p>💰 מחיר ללילה: ₪{pricePerNight}</p>
+              <hr />
+              <h2>סה"כ: ₪{totalPrice}</h2>
+            </>
+          )}
+
+          {range && user.role === "Owner" && zimmer.ownerId === user.id && (
+            <>
+              <h3>חסימת ימים</h3>
+              <p>📅 מתאריך: {range[0].toLocaleDateString()}</p>
+              <p>📅 עד תאריך: {range[1].toLocaleDateString()}</p>
+            </>
+          )}
+
+          <div className="booking-buttons">
+            {user.role === "Guest" && <button className="book-btn" onClick={book}>הזמן עכשיו</button>}
+            {user.role === "Owner" && zimmer.ownerId === user.id && (
+              <button className="block-btn" onClick={blockSelected}>חסום ימים</button>
+            )}
+          </div>
+        </div>
+      ) : (
+        <p className="admin-message">אין אפשרות להזמין או לחסום ימים. התחבר כ‑Guest או Owner.</p>
+      )}
+
+      {modalOpen && user?.role === "Guest" && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h4>סיכום הזמנה</h4>
-            <p><strong>צימר:</strong> {zimmer.nameZimmer}</p>
-            <p><strong>מתאריך:</strong> {range?.[0].toLocaleDateString()}</p>
-            <p><strong>עד תאריך:</strong> {range?.[1].toLocaleDateString()}</p>
-            <p><strong>לילות:</strong> {nightsCount()}</p>
-            <p><strong>סה"כ:</strong> ₪{totalPrice}</p>
+            <h3>אישור הזמנה</h3>
+            <p>צימר: {zimmer.nameZimmer}</p>
+            <p>מתאריך: {range?.[0].toLocaleDateString()}</p>
+            <p>עד תאריך: {range?.[1].toLocaleDateString()}</p>
+            <p>לילות: {nightsCount()}</p>
+            <h3>סה"כ: ₪{totalPrice}</h3>
             <div className="modal-buttons">
-              <button onClick={confirmBooking} className="book-btn">אישור</button>
-              <button onClick={() => setModalOpen(false)} className="block-btn">ביטול</button>
+              <button className="book-btn" onClick={confirmBooking}>אישור</button>
+              <button className="block-btn" onClick={() => setModalOpen(false)}>ביטול</button>
             </div>
           </div>
         </div>

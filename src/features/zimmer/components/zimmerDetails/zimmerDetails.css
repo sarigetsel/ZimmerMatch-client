@@ -110,3 +110,18 @@
   color: white;
   cursor: pointer;
 }
+
+.availability-section {
+  margin-top: 40px;
+  width: 100%;
+}
+
+.availability-section > * {
+  width: 100%;
+}
+
+.availability-title{
+  margin-top:50px;
+  margin-bottom:20px;
+  font-size:24px;
+}
