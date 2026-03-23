@@ -9,7 +9,7 @@ import { type RootState } from './app/store';
 import MyZimmers from './features/zimmer/components/myZimmers/myZimmers'; 
 import ZimmerDetails from './features/zimmer/components/zimmerDetails/zimmerDetails';
 import MyBookings from './features/booking/components/guestBooking';
-import OwnerBookings from './features/booking/components/ownerBookings';
+import OwnerBookings from './features/booking/components/ownerBooking/ownerBookings';
 import Home from './Home';
 
 function App() {

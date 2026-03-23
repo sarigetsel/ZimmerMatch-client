@@ -1,7 +1,3 @@
-/* ══════════════════════════════════
-   Navbar — Clean White, Sharp Lines
-   ══════════════════════════════════ */
-
 @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Rubik:wght@300;400;500;600&display=swap');
 
 .navbar {
@@ -12,7 +8,7 @@
   padding: 0 48px;
   height: 64px;
   background: #FFFFFF;
-  border-bottom: 1px solid #EDEAE5;
+  border-bottom: 1px solid #E0F2FE;
   position: fixed;
   top: 0;
   left: 0;
@@ -23,10 +19,9 @@
 }
 
 .navbar.scrolled {
-  box-shadow: 0 2px 20px rgba(26,20,16,0.07);
+  box-shadow: 0 2px 20px rgba(2, 132, 199, 0.07);
 }
 
-/* ── Logo ── */
 .nav-logo {
   display: flex;
   align-items: baseline;
@@ -42,7 +37,7 @@
   font-family: 'Frank Ruhl Libre', serif;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #1A1410;
+  color: #0F172A;
   letter-spacing: -0.03em;
   line-height: 1;
 }
@@ -51,56 +46,52 @@
   font-family: 'Frank Ruhl Libre', serif;
   font-size: 1.4rem;
   font-weight: 400;
-  color: #B5926A;
+  color: #0EA5E9;
   letter-spacing: -0.03em;
   line-height: 1;
 }
 
-/* ── Links container ── */
 .nav-links {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-/* Welcome text */
 .nav-welcome {
   font-family: 'Rubik', sans-serif;
   font-size: 0.85rem;
   font-weight: 400;
-  color: #8C7B6E;
+  color: #64748B;
   padding: 0 8px;
   white-space: nowrap;
   letter-spacing: 0.01em;
 }
 
-/* Separator line */
 .nav-sep {
   width: 1px;
   height: 18px;
-  background: #EDEAE5;
+  background: #E0F2FE;
   margin: 0 6px;
   flex-shrink: 0;
 }
 
-/* ── Base button ── */
 .nav-btn {
   font-family: 'Rubik', sans-serif;
-  font-size: 0.9rem;          /* הגדלתי מעט כדי שהעברית תשב טוב יותר */
-  padding: 8px 18px;          /* הוספת מרווח פנימי לצדדים */
+  font-size: 0.9rem;
+  padding: 8px 18px;
   border-radius: 8px;
   border: 1px solid transparent;
   background: transparent;
-  color: #44352A;
+  color: #1E293B;
   cursor: pointer;
   letter-spacing: 0.02em;
   transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
-  white-space: nowrap;      
-  line-height: 1.2;         
-  display: flex;              
+  white-space: nowrap;
+  line-height: 1.2;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-width: fit-content;   
+  min-width: fit-content;
 }
 
 @media (max-width: 768px) {
@@ -111,64 +102,64 @@
 }
 
 .nav-btn:hover {
-  background: #F5F0EB;
-  color: #1A1410;
+  background: #F0F9FF;
+  color: #0C4A6E;
 }
 
 .btn-ghost {
-  color: #6B5040;
-  border-color: #E0D8CE;
+  color: #0369A1;
+  border-color: #BAE6FD;
 }
 .btn-ghost:hover {
-  background: #F8F4EF;
-  border-color: #C9A87A;
-  color: #44352A;
+  background: #F0F9FF;
+  border-color: #7DD3FC;
+  color: #0C4A6E;
 }
 
 .btn-primary {
-  background: #1A1410;
-  color: #F5EDE0;
-  border-color: #1A1410;
+  background: #0284C7;
+  color: #FFFFFF;
+  border-color: #0284C7;
 }
 .btn-primary:hover {
-  background: #2E231A;
-  border-color: #2E231A;
-  color: #FBF5EE;
+  background: #0369A1;
+  border-color: #0369A1;
+  color: #FFFFFF;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(26,20,16,0.15);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15);
 }
 
 .btn-secondary {
-  color: #5A4535;
-  border-color: #E8E2DA;
-  background: #FAFAF8;
+  color: #0F172A;
+  border-color: #E2E8F0;
+  background: #F8FAFC;
 }
 .btn-secondary:hover {
-  background: #F0EBE3;
-  border-color: #D4AE88;
-  color: #3A2A1A;
+  background: #F1F5F9;
+  border-color: #38BDF8;
+  color: #0C4A6E;
 }
 
 .btn-logout {
-  color: #9A4040;
+  color: #0284C7;
   border-color: transparent;
   background: transparent;
 }
 .btn-logout:hover {
-  background: #FEF4F4;
-  border-color: #E8B0B0;
-  color: #7A2828;
+  background: #F0F9FF;
+  border-color: #BAE6FD;
+  color: #0369A1;
 }
 
 .btn-admin {
-  color: #5050A0;
-  border-color: #DDDDF0;
-  background: #F8F8FD;
+  color: #1D4ED8;
+  border-color: #DBEAFE;
+  background: #EFF6FF;
 }
 .btn-admin:hover {
-  background: #EFEFF8;
-  border-color: #A0A0D0;
-  color: #303080;
+  background: #DBEAFE;
+  border-color: #60A5FA;
+  color: #1E40AF;
 }
 
 @media (max-width: 768px) {

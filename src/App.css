@@ -3,16 +3,17 @@
 
 :root {
   --bg:           #FFFFFF;
-  --surface:      #FFFFFF;
-  --surface-alt:  #F7F4F0;
-  --border:       #EAE6E0;
-  --border-light: #F0EDE8;
-  --ink:          #1A1410;
-  --ink-soft:     #44352A;
-  --stone:        #8C7B6E;
-  --clay:         #B5926A;
-  --clay-deep:    #9A7851;
-  --gold:         #C8A96E;
+  --surface:      #F0F7FF;
+  --surface-alt:  #E1EDF8;
+  --border:       #CCD9E8;
+  --border-light: #DDE7F2;
+  --ink:          #0A192F;
+  --ink-soft:     #1B3A57;
+  --stone:        #5C7D9E;
+  --clay:         #3A86FF;
+  --clay-deep:    #1D4ED8;
+  --gold:         #60A5FA;
+
 
   --sh-xs:  0 1px 4px rgba(26,20,16,0.05);
   --sh-sm:  0 2px 14px rgba(26,20,16,0.07);
@@ -430,7 +431,7 @@ body {
   font-size: 0.875rem;
   font-weight: 300;
   line-height: 1.7;
-  color: rgba(245,237,224,0.55);
+  color: rgba(224, 225, 245, 0.55);
   max-width: 240px;
 }
 
