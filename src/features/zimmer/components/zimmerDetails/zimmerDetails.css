@@ -1,127 +1,376 @@
 
+
 .zimmer-details-container {
   max-width: 1200px;
-  margin: 0 auto; 
-  padding: 20px;
-  font-family: sans-serif;
+  margin: 0 auto;
+  padding: 28px 24px 80px;
+  font-family: 'Heebo', sans-serif;
+  color: var(--espresso);
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1.5px solid var(--clay);
+  color: var(--clay-deep);
+  padding: 9px 22px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: var(--transition);
+  margin-bottom: 36px;
+}
+
+.back-btn:hover {
+  background: var(--clay);
+  color: var(--white);
+  transform: translateX(4px);
 }
 
 .zimmer-main {
   display: flex;
-  gap: 30px;
+  gap: 48px;
   flex-wrap: wrap;
-}
-
-.zimmer-gallery {
-  flex: 1 1 600px;
-}
-
-.main-image {
-  width: 100%;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.thumbnails-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.thumbnail {
-  width: 80px;
-  height: 80px;
-  border-radius: 4px;
-  object-fit: cover;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: border 0.2s;
-}
-
-.thumbnail.active {
-  border: 2px solid #007bff;
+  align-items: flex-start;
 }
 
 .zimmer-info {
-  flex: 1 1 400px;
+  flex: 1 1 360px;
+  position: sticky;
+  top: 90px;
+}
+
+.zimmer-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 700;
+  color: var(--espresso);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.zimmer-city {
+  font-size: 0.9rem;
+  color: var(--clay-deep);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.zimmer-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.meta-pill {
+  background: var(--sand);
+  color: var(--bark);
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.zimmer-price {
+  margin: 0 0 6px;
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--espresso);
+  font-weight: 700;
+}
+
+.zimmer-price small {
+  font-size: 1rem;
+  color: var(--clay-deep);
+  font-family: 'Heebo', sans-serif;
+  font-weight: 400;
+}
+
+.zimmer-rooms {
+  font-size: 0.9rem;
+  color: var(--bark);
+  margin-bottom: 24px;
 }
 
 .zimmer-facilities {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
-  margin: 15px 0;
+  gap: 10px;
+  margin: 20px 0 28px;
 }
 
 .facility {
   display: flex;
   align-items: center;
-  gap: 5px;
-  background-color: #f5f5f5;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 14px;
+  gap: 7px;
+  background: var(--sand);
+  color: var(--bark);
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  font-weight: 500;
+  border: 1px solid var(--sand-dark);
+  transition: var(--transition-fast);
 }
 
-.booking-btn {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
+.facility:hover {
+  background: var(--sand-dark);
+  transform: translateY(-1px);
 }
 
-.booking-btn:hover {
-  background-color: #0056b3;
-}
 .facility-icon {
-  font-size: 18px;
+  font-size: 1rem;
+  color: var(--clay-deep);
 }
+
+.show-map-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--espresso);
+  color: var(--sand);
+  border: none;
+  padding: 11px 24px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: var(--transition);
+  margin-bottom: 20px;
+}
+
+.show-map-btn:hover {
+  background: var(--bark);
+  transform: scale(1.03);
+}
+
+.map-wrapper {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--sand-dark);
+}
+
+.map-type-buttons {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--sand);
+  border-bottom: 1px solid var(--sand-dark);
+}
+
+.map-type-buttons .map-btn {
+  background: var(--white);
+  color: var(--bark);
+  border: 1px solid var(--sand-dark);
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-family: 'Heebo', sans-serif;
+  transition: var(--transition-fast);
+}
+
+.map-type-buttons .map-btn:hover {
+  background: var(--clay);
+  color: var(--white);
+  border-color: var(--clay);
+}
+
+.zimmer-inline-map {
+  height: 300px;
+}
+
+.zimmer-description {
+  font-size: 0.95rem;
+  line-height: 1.78;
+  color: var(--bark);
+  border-top: 1px solid var(--sand-dark);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.zimmer-gallery {
+  flex: 1 1 560px;
+}
+
+.main-image {
+  width: 100%;
+  max-height: 460px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform var(--transition);
+  display: block;
+}
+
+.main-image:hover { transform: scale(1.01); }
+
+.thumbnails-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.thumbnail {
+  width: 78px;
+  height: 78px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: var(--transition);
+  opacity: 0.7;
+}
+
+.thumbnail:hover { opacity: 1; }
+
+.thumbnail.active {
+  border-color: var(--clay);
+  opacity: 1;
+  box-shadow: 0 4px 12px rgba(196,168,130,0.35);
+}
+
+.no-image-placeholder {
+  width: 100%;
+  height: 400px;
+  background: var(--sand);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clay-deep);
+  font-size: 1rem;
+  font-style: italic;
+  border: 1px dashed var(--clay);
+}
+
+.availability-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--espresso);
+  margin-top: 64px;
+  margin-bottom: 8px;
+  position: relative;
+  display: inline-block;
+}
+
+.availability-title::after {
+  content: '';
+  display: block;
+  width: 44px;
+  height: 3px;
+  background: var(--clay);
+  margin-top: 8px;
+  border-radius: 2px;
+}
+
+.availability-section {
+  margin-top: 24px;
+  width: 100%;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--sand-dark);
+}
+
+.availability-section > * { width: 100%; }
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 20px;
+  color: var(--bark);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+}
+
+.error-container button {
+  background: var(--clay);
+  color: var(--white);
+  border: none;
+  padding: 12px 28px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.error-container button:hover { background: var(--clay-deep); }
+
 .image-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.8);
+  inset: 0;
+  background: rgba(20, 12, 6, 0.92);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  animation: modalFadeIn 0.25s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .modal-image {
-  max-width: 90%;
-  max-height: 90%;
-  box-shadow: 0 0 10px #000;
+  max-width: 90vw;
+  max-height: 88vh;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 80px rgba(0,0,0,0.6);
+  object-fit: contain;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from { transform: scale(0.94); }
+  to   { transform: scale(1); }
 }
 
 .modal-close-btn {
   position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 30px;
-  background: transparent;
-  border: none;
-  color: white;
+  top: 24px;
+  left: 32px;
+  font-size: 1.5rem;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  color: var(--white);
   cursor: pointer;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
 }
 
-.availability-section {
-  margin-top: 40px;
-  width: 100%;
-}
+.modal-close-btn:hover { background: rgba(255,255,255,0.22); }
 
-.availability-section > * {
-  width: 100%;
-}
-
-.availability-title{
-  margin-top:50px;
-  margin-bottom:20px;
-  font-size:24px;
+@media (max-width: 900px) {
+  .zimmer-main { flex-direction: column-reverse; }
+  .zimmer-info { position: static; }
+  .zimmer-gallery { width: 100%; }
 }

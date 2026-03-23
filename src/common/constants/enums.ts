@@ -1,5 +1,3 @@
-// src/common/constants/enums.ts
-
 export const FacilityValues: Record<string, number> = {
    Pool:1,               
    Parking:2,            

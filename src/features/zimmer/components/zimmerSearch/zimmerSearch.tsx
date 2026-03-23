@@ -1,171 +1,127 @@
-// src/features/zimmer/components/ZimmerSearch.tsx
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSearchZimmersQuery, useGetCitiesQuery } from "../../redux/zimmerApi";
+import React, { useState, useEffect } from "react";
+import { useGetCitiesQuery, ZimmerSearchDto } from "../../redux/zimmerApi";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import "./zimmerSearch.css";
 
-
-interface Zimmer {
-  zimmerId: number;
-  ownerId: number;
-  nameZimmer: string;
-  description: string;
-  city: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  numRooms: number;
-  pricePerNight: number;
-  createdAt: string;
-  arrImages?: string[];
-  facilities: string[]; 
+interface ZimmerSearchProps {
+  onSearchChange: (params: ZimmerSearchDto) => void;
+  onToggleMap: () => void;
 }
 
-export default function ZimmerSearch() {
-  const navigate = useNavigate();
-
+const ZimmerSearch: React.FC<ZimmerSearchProps> = ({ onSearchChange, onToggleMap }) => {
   const [searchParams, setSearchParams] = useState({
     searchText: "",
     city: "",
-    minPrice: 0,
-    maxPrice: 2000,
-    numRooms: "",
-    facilities: [] as string[],
+    maxPrice: 3000,
+    hasPool: false,
+    hasJacuzzi: false,
   });
 
   const { data: cities } = useGetCitiesQuery();
 
+  useEffect((): void => {
+    const mapped: ZimmerSearchDto = {
+      FreeText:   searchParams.searchText || undefined,
+      City:       searchParams.city        || undefined,
+      MaxPrice:   searchParams.maxPrice > 0 ? searchParams.maxPrice : undefined,
+      HasPool:    searchParams.hasPool     ? true : undefined,
+      HasJacuzzi: searchParams.hasJacuzzi  ? true : undefined,
+    };
+    onSearchChange(mapped);
+  }, [searchParams, onSearchChange]);
 
-  const mappedSearchParams = {
-    FreeText: searchParams.searchText,
-    City: searchParams.city || undefined,
-    MaxPrice: searchParams.maxPrice > 0 ? searchParams.maxPrice : undefined,
-    NumOfRooms: searchParams.numRooms ? Number(searchParams.numRooms) : undefined,
-    HasPool: searchParams.facilities.includes("Pool") ? true : undefined,
-    HasJacuzzi: searchParams.facilities.includes("Jacuzzi") ? true : undefined,
-    HasSauna: searchParams.facilities.includes("Sauna") ? true : undefined,
-  };
-
-  const { data: results } = useSearchZimmersQuery(mappedSearchParams);
-
-
-  const mappedResults: Zimmer[] | undefined = results?.map(z => ({
-    ...z,
-    facilities: Array.isArray(z.facilities)
-      ? z.facilities
-      : typeof z.facilities === "string"
-        ? [z.facilities]
-        : [],
-  }));
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchParams({ ...searchParams, [e.target.name]: e.target.value });
   };
 
-  const handleFacility = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const checked = e.target.checked;
-    const updatedFacilities = checked
-      ? [...searchParams.facilities, value]
-      : searchParams.facilities.filter(f => f !== value);
-    setSearchParams({ ...searchParams, facilities: updatedFacilities });
-  };
-
-  const clearSearch = () => {
-    setSearchParams({
-      searchText: "",
-      city: "",
-      minPrice: 0,
-      maxPrice: 2000,
-      numRooms: "",
-      facilities: [],
-    });
-  };
-
   return (
-    <div className="search-wrapper">
-     
+    <div className="search-container-overlay">
       <div className="search-bar-row">
 
-        <input
-          type="text"
-          placeholder="🔍 חיפוש צימר..."
-          name="searchText"
-          value={searchParams.searchText}
-          onChange={handleChange}
-        />
-
-        <input
-          list="cities"
-          placeholder="בחר עיר"
-          name="city"
-          value={searchParams.city}
-          onChange={handleChange}
-        />
-        <datalist id="cities">
-          {cities?.map(city => <option key={city} value={city} />)}
-        </datalist>
-
-        <input
-          type="number"
-          placeholder="מספר חדרים"
-          name="numRooms"
-          value={searchParams.numRooms}
-          onChange={handleChange}
-        />
-
-        <div className="slider-wrapper">
-          <label>טווח מחירים: ₪{searchParams.minPrice} - ₪{searchParams.maxPrice}</label>
-          <Slider
-            range
-            min={0}
-            max={10000}
-            value={[searchParams.minPrice, searchParams.maxPrice]}
-            onChange={(value: number | number[]) => {
-              if (Array.isArray(value)) {
-                setSearchParams({ ...searchParams, minPrice: value[0], maxPrice: value[1] });
-              }
-            }}
-          />
+        <div className="search-inputs-row">
+          <div className="search-input-group">
+            <span className="input-label">חיפוש</span>
+            <input
+              type="text"
+              name="searchText"
+              placeholder="שם, תיאור, מיקום…"
+              value={searchParams.searchText}
+              onChange={handleChange}
+              autoComplete="off"
+            />
+          </div>
+          <div className="search-input-group">
+            <span className="input-label">עיר</span>
+            <input
+              list="cities-list"
+              name="city"
+              placeholder="כל הערים"
+              value={searchParams.city}
+              onChange={handleChange}
+              autoComplete="off"
+            />
+            <datalist id="cities-list">
+              {cities?.map((city: string) => <option key={city} value={city} />)}
+            </datalist>
+          </div>
         </div>
 
-        <div className="facilities-filter">
-          <label>
-            <input type="checkbox" value="Pool" checked={searchParams.facilities.includes("Pool")} onChange={handleFacility} /> בריכה
-          </label>
-          <label>
-            <input type="checkbox" value="Jacuzzi" checked={searchParams.facilities.includes("Jacuzzi")} onChange={handleFacility} /> ג'קוזי
-          </label>
-          <label>
-            <input type="checkbox" value="Sauna" checked={searchParams.facilities.includes("Sauna")} onChange={handleFacility} /> סאונה
-          </label>
-        </div>
+        <div className="search-controls-row">
 
-        <button onClick={() => navigate("/zimmer-map")}>הצג מפה</button>
-        <button className="clear-btn" onClick={clearSearch}>נקה</button>
-      </div>
-
-     
-      <div className="search-results">
-        {mappedResults?.map((zimmer: Zimmer) => (
-          <div
-            key={zimmer.zimmerId}
-            className="search-card"
-            onClick={() => navigate(`/zimmer/${zimmer.zimmerId}`)}
-          >
-            {zimmer.arrImages?.[0] && (
-              <img src={`data:image/jpeg;base64,${zimmer.arrImages[0]}`} className="search-image" alt={zimmer.nameZimmer} />
-            )}
-            <div className="card-content">
-              <h3>{zimmer.nameZimmer}</h3>
-              <p className="city">{zimmer.city}</p>
-              <p className="price">₪{zimmer.pricePerNight} ללילה</p>
+          <div className="slider-wrapper">
+            <span className="slider-label">
+              עד <span>₪{searchParams.maxPrice.toLocaleString()}</span>
+            </span>
+            <div className="slider-track">
+              <Slider
+                min={0}
+                max={15000}
+                step={100}
+                value={searchParams.maxPrice}
+                onChange={(v: number | number[]) =>
+                  setSearchParams({ ...searchParams, maxPrice: v as number })
+                }
+              />
             </div>
           </div>
-        ))}
+
+          <div className="controls-divider" />
+
+          <div className="facilities-filter">
+            <label className={`facility-pill${searchParams.hasPool ? ' checked' : ''}`}>
+              <input
+                type="checkbox"
+                checked={searchParams.hasPool}
+                onChange={e => setSearchParams({ ...searchParams, hasPool: e.target.checked })}
+              />
+              🏊 בריכה
+            </label>
+            <label className={`facility-pill${searchParams.hasJacuzzi ? ' checked' : ''}`}>
+              <input
+                type="checkbox"
+                checked={searchParams.hasJacuzzi}
+                onChange={e => setSearchParams({ ...searchParams, hasJacuzzi: e.target.checked })}
+              />
+              🛁 ג׳קוזי
+            </label>
+          </div>
+
+          <div className="controls-divider" />
+
+          <div className="search-action-btns">
+            <button className="map-btn" type="button" onClick={onToggleMap}>
+              🗺️ מפה
+            </button>
+            <button className="search-btn" type="button">
+              🔍 חפש
+            </button>
+          </div>
+
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default ZimmerSearch;

@@ -1,86 +1,86 @@
-import { useState } from 'react'; 
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import { type RootState } from '../../../../app/store';
 import { logout } from '../../redux/userSlice';
 import LoginModal from '.././loginModal/loginModal';
-import { AddZimmer } from '../../../zimmer/components/addZimmer/addZimmer';
-import './Navbar.css'; 
+import './Navbar.css';
 
 const Navbar = () => {
-    const { currentUser } = useSelector((state: RootState) => state.user);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const { currentUser } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const [isModalOpen, setModalOpen] = useState(false);
-    const [modalType, setModalType] = useState<'login' | 'register'>('login');
-    const [showAddForm, setShowAddForm] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<'login' | 'register'>('login');
+  const [scrolled, setScrolled] = useState(false);
 
-    const handleOpenLogin = () => {
-        setModalType('login');
-        setModalOpen(true);
-    };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-    const handleOpenRegister = () => {
-        setModalType('register');
-        setModalOpen(true);
-    };
+  const handleOpenLogin = () => { setModalType('login'); setModalOpen(true); };
+  const handleOpenRegister = () => { setModalType('register'); setModalOpen(true); };
 
-    return (
-        <nav className="navbar">
-            <div className="nav-logo" onClick={() => navigate("/")}>ZimmerMatch</div>
-            
-            <div className="nav-links">
-                {currentUser ? (
-                    <>
-                        <span className="nav-welcome">שלום, {currentUser.name}</span>
-                        
-                        {currentUser?.role === "Admin" && (
-                            <button onClick={() => navigate("/admin")} className="nav-btn btn-admin">
-                                ניהול מערכת
-                            </button>
-                        )}
+  return (
+    <>
+      <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
+        <div className="nav-logo" onClick={() => navigate('/')}>
+          <span className="logo-main">Zimmer</span>
+          <span className="logo-accent">Match</span>
+        </div>
 
-                        {currentUser.role === "Owner" && (
-                            <>
-                                {!showAddForm && (
-                                    <button onClick={() => navigate("/my-zimmers")} className="nav-btn btn-my-zimmers">
-                                        הצימרים שלי
-                                    </button>
-                                )}
-                                {showAddForm && (
-                                    <AddZimmer onClose={() => setShowAddForm(false)} />
-                                )}
-                                 <button onClick={() => navigate("/owner-bookings")} className="nav-btn">
-                                   הזמנות
-                                 </button>
-                            </>
-                        )} 
-                        {currentUser?.role === "Guest" && (
-                               <button 
-                               onClick={() => navigate("/my-bookings")} 
-                               className="nav-btn"
-                                >
-                                ההזמנות שלי
-                                  </button>
-                                )}
-                        <button onClick={() => dispatch(logout())} className="nav-btn btn-logout">התנתק</button>
-                    </>
-                ) : (
-                    <>
-                        <button onClick={handleOpenLogin} className="nav-btn btn-login">התחברות</button>
-                        <button onClick={handleOpenRegister} className="nav-btn btn-register">הרשמה</button>
-                    </>
-                )}
-            </div>
-            
-            <LoginModal 
-                isOpen={isModalOpen} 
-                onClose={() => setModalOpen(false)} 
-                type={modalType} 
-            />
-        </nav>
-    );
+        <div className="nav-links">
+          {currentUser ? (
+            <>
+              <span className="nav-welcome">שלום, {currentUser.name}</span>
+
+              {currentUser.role === 'Admin' && (
+                <button onClick={() => navigate('/admin')} className="nav-btn btn-admin">
+                  ניהול מערכת
+                </button>
+              )}
+
+              {currentUser.role === 'Owner' && (
+                <>
+                  <button onClick={() => navigate('/my-zimmers')} className="nav-btn btn-secondary">
+                    הצימרים שלי
+                  </button>
+                  <button onClick={() => navigate('/owner-bookings')} className="nav-btn btn-secondary">
+                    הזמנות
+                  </button>
+                </>
+              )}
+
+              {currentUser.role === 'Guest' && (
+                <button onClick={() => navigate('/my-bookings')} className="nav-btn btn-secondary">
+                  ההזמנות שלי
+                </button>
+              )}
+
+              <div className="nav-sep" />
+              <button onClick={() => dispatch(logout())} className="nav-btn btn-logout">
+                התנתק
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={handleOpenLogin} className="nav-btn btn-ghost">התחברות</button>
+              <button onClick={handleOpenRegister} className="nav-btn btn-primary">הרשמה</button>
+            </>
+          )}
+        </div>
+      </nav>
+
+      <LoginModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        type={modalType}
+      />
+    </>
+  );
 };
 
 export default Navbar;

@@ -108,7 +108,6 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
 
         try {
         if(existingZimmer) {
-            // שימי לב: id נשלח ל-URL, ו-data (ה-FormData) נשלח כ-body
             await updateZimmer({ id: existingZimmer.zimmerId, data }).unwrap();
             alert("הצימר עודכן בהצלחה!");
         } else {

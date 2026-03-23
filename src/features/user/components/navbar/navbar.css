@@ -1,52 +1,180 @@
+/* ══════════════════════════════════
+   Navbar — Clean White, Sharp Lines
+   ══════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Rubik:wght@300;400;500;600&display=swap');
+
 .navbar {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #ddd;
-  direction: rtl; 
+  padding: 0 48px;
+  height: 64px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #EDEAE5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  direction: rtl;
+  transition: box-shadow 0.25s ease;
 }
 
+.navbar.scrolled {
+  box-shadow: 0 2px 20px rgba(26,20,16,0.07);
+}
+
+/* ── Logo ── */
 .nav-logo {
-  font-size: 24px;
-  font-weight: bold;
-  color: #007bff;
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
   cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s;
 }
 
+.nav-logo:hover { opacity: 0.75; }
+
+.logo-main {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1A1410;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.logo-accent {
+  font-family: 'Frank Ruhl Libre', serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #B5926A;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+/* ── Links container ── */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
 }
 
+/* Welcome text */
 .nav-welcome {
-  font-weight: 500;
-  margin-left: 15px;
+  font-family: 'Rubik', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #8C7B6E;
+  padding: 0 8px;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
+/* Separator line */
+.nav-sep {
+  width: 1px;
+  height: 18px;
+  background: #EDEAE5;
+  margin: 0 6px;
+  flex-shrink: 0;
+}
 
+/* ── Base button ── */
 .nav-btn {
-  padding: 8px 18px;
-  border: none;
-  border-radius: 6px;
+  font-family: 'Rubik', sans-serif;
+  font-size: 0.9rem;          /* הגדלתי מעט כדי שהעברית תשב טוב יותר */
+  padding: 8px 18px;          /* הוספת מרווח פנימי לצדדים */
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #44352A;
   cursor: pointer;
-  font-weight: 500;
-  transition: opacity 0.2s, transform 0.1s;
+  letter-spacing: 0.02em;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+  white-space: nowrap;      
+  line-height: 1.2;         
+  display: flex;              
+  align-items: center;
+  justify-content: center;
+  min-width: fit-content;   
 }
 
-.nav-btn:active {
-  transform: scale(0.96);
+@media (max-width: 768px) {
+  .nav-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
 }
 
 .nav-btn:hover {
-  opacity: 0.85;
+  background: #F5F0EB;
+  color: #1A1410;
 }
 
-.btn-login { background-color: #28a745; color: #fff; }
-.btn-register { background-color: #007bff; color: #fff; }
-.btn-logout { background-color: #dc3545; color: #fff; }
-.btn-admin { background-color: #6c757d; color: #fff; }
-.btn-owner { background-color: #17a2b8; color: #fff; }
-.btn-my-zimmers { background-color: #f0f0f0; color: #333; border: 1px solid #ccc; }
+.btn-ghost {
+  color: #6B5040;
+  border-color: #E0D8CE;
+}
+.btn-ghost:hover {
+  background: #F8F4EF;
+  border-color: #C9A87A;
+  color: #44352A;
+}
+
+.btn-primary {
+  background: #1A1410;
+  color: #F5EDE0;
+  border-color: #1A1410;
+}
+.btn-primary:hover {
+  background: #2E231A;
+  border-color: #2E231A;
+  color: #FBF5EE;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(26,20,16,0.15);
+}
+
+.btn-secondary {
+  color: #5A4535;
+  border-color: #E8E2DA;
+  background: #FAFAF8;
+}
+.btn-secondary:hover {
+  background: #F0EBE3;
+  border-color: #D4AE88;
+  color: #3A2A1A;
+}
+
+.btn-logout {
+  color: #9A4040;
+  border-color: transparent;
+  background: transparent;
+}
+.btn-logout:hover {
+  background: #FEF4F4;
+  border-color: #E8B0B0;
+  color: #7A2828;
+}
+
+.btn-admin {
+  color: #5050A0;
+  border-color: #DDDDF0;
+  background: #F8F8FD;
+}
+.btn-admin:hover {
+  background: #EFEFF8;
+  border-color: #A0A0D0;
+  color: #303080;
+}
+
+@media (max-width: 768px) {
+  .navbar      { padding: 0 16px; height: 56px; }
+  .nav-welcome { display: none; }
+  .nav-sep     { display: none; }
+  .nav-btn     { padding: 6px 11px; font-size: 0.8rem; }
+  .logo-main, .logo-accent { font-size: 1.15rem; }
+}

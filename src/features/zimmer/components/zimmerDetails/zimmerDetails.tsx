@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetZimmersQuery } from '../../redux/zimmerApi';
 import './zimmerDetails.css';
@@ -32,7 +32,7 @@ const facilitiesIconsMap: Record<number, React.ReactNode> = {
   [FacilityValues.Wifi]: <Icons.FaWifi />,
   [FacilityValues.Jacuzzi]: <Icons.FaHotTub />,
   [FacilityValues.Accessible]: <Icons.FaWheelchair />,
-  [FacilityValues.AirConditioning]: <Icons.FaFire />,
+  [FacilityValues.AirConditioning]: <Icons.FaSnowflake />,
   [FacilityValues.BBQ]: "גריל",
   [FacilityValues.Kitchen]: <Icons.FaUtensils />,
   [FacilityValues.Heating]: <Icons.FaFire />,
@@ -46,13 +46,15 @@ const facilitiesIconsMap: Record<number, React.ReactNode> = {
 };
 
 const yellowIcon = new L.Icon({
-  iconUrl: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
-  iconSize: [32, 32],
-  iconAnchor: [16, 32]
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
 const ZimmerDetails: React.FC = () => {
-
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
@@ -60,14 +62,26 @@ const ZimmerDetails: React.FC = () => {
 
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: zimmers } = useGetZimmersQuery();
+  
+  const { data: zimmers, isLoading, isError } = useGetZimmersQuery();
 
-  if (!zimmers || !Array.isArray(zimmers)) return <div>טוען צימר...</div>;
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
-  const zimmerId = Number(id);
-  const zimmer = zimmers.find((z) => Number(z.zimmerId) === zimmerId) as Zimmer | undefined;
+  if (isLoading) return <div className="loading-container">טוען נתונים...</div>;
+  if (isError || !zimmers) return <div className="error-container">שגיאה בטעינת הנתונים</div>;
 
-  if (!zimmer) return <div>צימר לא נמצא</div>;
+  const zimmer: Zimmer | undefined = zimmers.find((z) => Number(z.zimmerId) === Number(id));
+
+  if (!zimmer) {
+    return (
+      <div className="error-container">
+        <h2>הצימר לא נמצא</h2>
+        <button onClick={() => navigate('/')}>חזרה לדף הבית</button>
+      </div>
+    );
+  }
 
   const images = Array.isArray(zimmer.arrImages) ? zimmer.arrImages : [];
 
@@ -87,19 +101,16 @@ const ZimmerDetails: React.FC = () => {
       : [];
 
   return (
-    <div className="zimmer-details-container">
-
+    <div className="zimmer-details-container" dir="rtl">
       <button className="back-btn" onClick={() => navigate(-1)}>
         ⬅ חזרה
       </button>
 
       <div className="zimmer-main">
-
         <div className="zimmer-info">
-
           <h1 className="zimmer-name">{zimmer.nameZimmer}</h1>
-          <p className="zimmer-city">{zimmer.city}</p>
-          <p className="zimmer-price">₪{zimmer.pricePerNight} ללילה</p>
+          <p className="zimmer-city">📍 {zimmer.city}</p>
+          <p className="zimmer-price"><strong>₪{zimmer.pricePerNight}</strong> ללילה</p>
           <p className="zimmer-rooms">מספר חדרים: {zimmer.numRooms}</p>
 
           <div className="zimmer-facilities">
@@ -111,51 +122,43 @@ const ZimmerDetails: React.FC = () => {
             ))}
           </div>
 
-          <button
-            className="show-map-btn"
-            onClick={() => setMapVisible(prev => !prev)}
-          >
-            הצג במפה
+          <button className="show-map-btn" onClick={() => setMapVisible(!mapVisible)}>
+            {mapVisible ? "הסתר מפה" : "הצג מיקום במפה"}
           </button>
 
           {mapVisible && (
-            <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
-              <button onClick={() => setMapType("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")}>רגילה</button>
-              <button onClick={() => setMapType("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png")}>לווין</button>
-              <button onClick={() => setMapType("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png")}>היברידית</button>
+            <div className="map-wrapper" style={{ marginTop: '15px' }}>
+              <div className="map-type-buttons" style={{ marginBottom: '10px', display: 'flex', gap: '5px' }}>
+                <button 
+                  className="map-btn" 
+                  onClick={() => setMapType("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")}
+                >
+                  מפה רגילה
+                </button>
+                <button 
+                  className="map-btn" 
+                  onClick={() => setMapType("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png")}
+                >
+                  מפה טופוגרפית
+                </button>
+              </div>
+              <div className="zimmer-inline-map" style={{ height: "300px", borderRadius: '8px', overflow: 'hidden' }}>
+                <MapContainer
+                  center={[zimmer.latitude, zimmer.longitude]}
+                  zoom={14}
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  <TileLayer url={mapType} />
+                  <Marker position={[zimmer.latitude, zimmer.longitude]} icon={yellowIcon} />
+                </MapContainer>
+              </div>
             </div>
           )}
 
-          {mapVisible && (
-            <div
-              className="zimmer-inline-map"
-              style={{
-                marginTop: "5px",
-                borderRadius: "8px",
-                overflow: "hidden",
-                height: "300px"
-              }}
-            >
-              <MapContainer
-                center={[zimmer.latitude, zimmer.longitude]}
-                zoom={14}
-                style={{ height: "100%", width: "100%" }}
-              >
-                <TileLayer url={mapType} />
-                <Marker
-                  position={[zimmer.latitude, zimmer.longitude]}
-                  icon={yellowIcon}
-                />
-              </MapContainer>
-            </div>
-          )}
-
-          <p className="zimmer-description">{zimmer.description}</p>
-
+          <p className="zimmer-description" style={{ marginTop: '20px' }}>{zimmer.description}</p>
         </div>
 
         <div className="zimmer-gallery">
-
           {images.length > 0 ? (
             <>
               <img
@@ -163,9 +166,8 @@ const ZimmerDetails: React.FC = () => {
                 className="main-image"
                 alt={zimmer.nameZimmer}
                 onClick={() => setModalOpen(true)}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: 'pointer' }}
               />
-
               <div className="thumbnails-gallery">
                 {images.map((img, idx) => (
                   <img
@@ -173,42 +175,36 @@ const ZimmerDetails: React.FC = () => {
                     src={`data:image/jpeg;base64,${img}`}
                     className={`thumbnail ${idx === currentImageIndex ? "active" : ""}`}
                     onClick={() => setCurrentImageIndex(idx)}
+                    alt={`תמונה ${idx + 1}`}
                   />
                 ))}
               </div>
             </>
           ) : (
-            <div className="no-image-placeholder">אין תמונה</div>
+            <div className="no-image-placeholder">אין תמונות זמינות</div>
           )}
-
         </div>
+      </div>
 
+      <h2 className="availability-title">בדיקת זמינות</h2>
+      <div className="availability-section">
+        <ZimmerAvailability
+          zimmerId={zimmer.zimmerId}
+          pricePerNight={zimmer.pricePerNight}
+          zimmer={zimmer}
+        />
       </div>
 
       {modalOpen && (
         <div className="image-modal" onClick={() => setModalOpen(false)}>
-          <img
-            src={`data:image/jpeg;base64,${images[currentImageIndex]}`}
-            className="modal-image"
-            alt={zimmer.nameZimmer}
+          <img 
+            src={`data:image/jpeg;base64,${images[currentImageIndex]}`} 
+            className="modal-image" 
+            alt="תצוגה מלאה" 
           />
-          <button
-            className="modal-close-btn"
-            onClick={() => setModalOpen(false)}
-          >
-            ✖
-          </button>
+          <button className="modal-close-btn" onClick={() => setModalOpen(false)}>✖</button>
         </div>
       )}
-
-<h2 className="availability-title">בדיקת זמינות</h2>     <div className="availability-section">
-  <ZimmerAvailability
-    zimmerId={zimmer.zimmerId}
-    pricePerNight={zimmer.pricePerNight}
-    zimmer={zimmer}
-  />
-</div>
-
     </div>
   );
 };

@@ -5,102 +5,70 @@ import AdminPanel from './features/admin/components/adminPanel/adminPanel';
 import ProtectedRoute from './features/admin/components/protectedRoute';
 import { useSelector } from 'react-redux';
 import { type RootState } from './app/store';
-import ZimmerList from './features/zimmer/components/zimmerList/zimmerList';
-import MyZimmers from './features/zimmer/components/myZimmers';
+
+import MyZimmers from './features/zimmer/components/myZimmers/myZimmers'; 
 import ZimmerDetails from './features/zimmer/components/zimmerDetails/zimmerDetails';
-import ZimmerSearch from './features/zimmer/components/zimmerSearch/zimmerSearch';
-import ZimmerMap from './features/zimmer/components/zimmerMap/zimmerMap';
-import { useSearchZimmersQuery, ZimmerSearchDto } from './features/zimmer/redux/zimmerApi';
-import { useState } from 'react';
 import MyBookings from './features/booking/components/guestBooking';
-import  OwnerBookings from './features/booking/components/OwnerBookings';
+import OwnerBookings from './features/booking/components/ownerBookings';
+import Home from './Home';
 
 function App() {
 
   const { currentUser } = useSelector((state: RootState) => state.user);
 
-  const [searchParams, setSearchParams] = useState<ZimmerSearchDto>({});
-
-  const { data: zimmers } = useSearchZimmersQuery(searchParams);
-
   return (
     <BrowserRouter>
-
       <Navbar />
 
-      <Routes>
+      <div className="app-content" style={{ paddingTop: '70px' }}>
 
-        <Route
-          path="/"
-          element={
-            <div className="App">
+        <Routes>
 
-              <header>
-                <h1>מערכת הזמנת צימרים</h1>
-              </header>
+          <Route path="/" element={<Home />} />
 
-              <ZimmerSearch onSearch={setSearchParams} />
-              {zimmers && zimmers.length > 0 && (
-                <div style={{ marginTop: "20px" }}>
-                  <ZimmerMap zimmers={zimmers} />
-                </div>
-              )}
+          <Route path="/zimmer/:id" element={<ZimmerDetails />} />
 
-              <ZimmerList zimmers={zimmers ?? []} />
-
-            </div>
-          }
-        />
-
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute currentUser={currentUser} allowedRoles={["Admin"]}>
-              <AdminPanel />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/my-zimmers"
-          element={
-            <ProtectedRoute currentUser={currentUser} allowedRoles={["Owner"]}>
-              <MyZimmers />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route path="/zimmer/:id" element={<ZimmerDetails />} />
-
-        {zimmers && (
-          <Route path="/zimmer-map/:id" element={<ZimmerMap zimmers={zimmers} />} />
-        )}
-
-        {zimmers && (
-          <Route path="/zimmer-map" element={<ZimmerMap zimmers={zimmers} />} />
-        )}
-
-        <Route
-         path="/my-bookings"
-         element={
-         <ProtectedRoute currentUser={currentUser} allowedRoles={["Guest"]}>
-         <MyBookings />
-         </ProtectedRoute>
-         }
-         />
-         <Route
-           path="/owner-bookings"
-           element={
-           <ProtectedRoute currentUser={currentUser} allowedRoles={["Owner"]}>
-           <OwnerBookings />
-           </ProtectedRoute>
-          }
+          <Route
+            path="/my-zimmers"
+            element={
+              <ProtectedRoute currentUser={currentUser} allowedRoles={["Owner"]}>
+                <MyZimmers />
+              </ProtectedRoute>
+            }
           />
 
-      </Routes>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute currentUser={currentUser} allowedRoles={["Admin"]}>
+                <AdminPanel />
+              </ProtectedRoute>
+            }
+          />
 
+          <Route
+            path="/my-bookings"
+            element={
+              <ProtectedRoute currentUser={currentUser} allowedRoles={["Guest"]}>
+                <MyBookings />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/owner-bookings"
+            element={
+              <ProtectedRoute currentUser={currentUser} allowedRoles={["Owner"]}>
+                <OwnerBookings />
+              </ProtectedRoute>
+            }
+          />
+
+        </Routes>
+
+      </div>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

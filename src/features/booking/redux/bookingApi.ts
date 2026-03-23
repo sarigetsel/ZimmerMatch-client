@@ -2,9 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import type { Booking } from "./bookingSlice"
 
 export const bookingApi = createApi({
-
   reducerPath: "booking",
-
   baseQuery: fetchBaseQuery({
     baseUrl: "https://localhost:7195/api/Booking",
     prepareHeaders: (headers) => {
@@ -14,44 +12,37 @@ export const bookingApi = createApi({
       return headers
     }
   }),
-
-    tagTypes: ["booking", "availability"],
-
+  tagTypes: ["booking", "availability"],
   endpoints: (builder) => ({
-
     getBookings: builder.query<Booking[], void>({
       query: () => "",
       providesTags: ["booking"]
     }),
-
     getBookingById: builder.query<Booking, number>({
       query: (id) => `/${id}`
     }),
-
     getOwnerBookings: builder.query<Booking[], void>({
       query: () => "/my-bookings",
       providesTags: ["booking"]
     }),
-
-  addBooking: builder.mutation<Booking, {
-  userId: number,
-  userName: string,
-  zimmerId: number,
-  zimmerName: string,
-  startDate: string,
-  endDate: string,
-  totalPrice: number,
-  status: number
-}>({
-  query: (data) => ({
-    url: "/",
-    method: "POST",
-    body: data,
-    headers: { "Content-Type": "application/json" }
-  }),
-  invalidatesTags: ["booking", "availability"]
-}),
-
+    addBooking: builder.mutation<Booking, {
+      userId: number,
+      userName: string,
+      zimmerId: number,
+      zimmerName: string,
+      startDate: string,
+      endDate: string,
+      totalPrice: number,
+      status: number
+    }>({
+      query: (data) => ({
+        url: "/",
+        method: "POST",
+        body: data,
+        headers: { "Content-Type": "application/json" }
+      }),
+      invalidatesTags: ["booking", "availability"]
+    }),
     updateBooking: builder.mutation<Booking, { id: number; data: Booking }>({
       query: ({ id, data }) => ({
         url: `/${id}`,
@@ -60,7 +51,6 @@ export const bookingApi = createApi({
       }),
       invalidatesTags: ["booking"]
     }),
-
     deleteBooking: builder.mutation<void, number>({
       query: (id) => ({
         url: `/${id}`,
@@ -68,9 +58,7 @@ export const bookingApi = createApi({
       }),
       invalidatesTags: ["booking"]
     }),
-
   }),
-
 })
 
 export const {

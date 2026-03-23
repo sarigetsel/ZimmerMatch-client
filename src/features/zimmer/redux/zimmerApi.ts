@@ -51,7 +51,6 @@ export const {
   useGetCitiesQuery,
 } = zimmerApi;
 
-// Type עבור החיפוש
 export interface ZimmerSearchDto {
   FreeText?: string;
   MaxPrice?: number;

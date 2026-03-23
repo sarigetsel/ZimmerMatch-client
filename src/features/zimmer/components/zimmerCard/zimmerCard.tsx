@@ -1,94 +1,108 @@
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { addToFavoriteZimmers, type Zimmer } from '../../redux/zimmerSlice';
-import { useNavigate } from 'react-router-dom';
-import { useState, useRef } from 'react';
+import { addToFavoriteZimmers, Zimmer } from '../../redux/zimmerSlice';
+import { Link } from 'react-router-dom';
 import './ZimmerCard.css';
 
 interface ZimmerCardProps {
   zimmer: Zimmer;
+  viewType?: 'grid' | 'list';
   showActions?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
 }
 
-const ZimmerCard = ({ zimmer, showActions = false, onEdit, onDelete }: ZimmerCardProps) => {
+const ZimmerCard: React.FC<ZimmerCardProps> = ({
+  zimmer,
+  viewType = 'list',
+  showActions,
+  onEdit,
+  onDelete,
+}) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const hoverInterval = useRef<NodeJS.Timeout | null>(null);
-  const images = zimmer.arrImages ?? [];
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleCardClick = () => {
-    navigate(`/zimmer/${zimmer.zimmerId}`);
-  };
+  const images: string[] = zimmer.arrImages || [];
+  const isGrid = viewType === 'grid';
 
-  const handleMouseEnter = () => {
-    if (images.length > 1) {
-      hoverInterval.current = setInterval(() => {
-        setCurrentImageIndex(prev => (prev + 1) % images.length);
-      }, 1000);
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
+    if (isHovered && images.length > 1) {
+      interval = setInterval(() => {
+        setCurrentImgIndex(prev => (prev + 1) % images.length);
+      }, 900);
     }
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverInterval.current) {
-      clearInterval(hoverInterval.current);
-      hoverInterval.current = null;
-    }
-    setCurrentImageIndex(0);
-  };
+    return () => { if (interval) clearInterval(interval); };
+  }, [isHovered, images.length]);
 
   return (
-    <div
-      className="zimmer-card"
-      onClick={handleCardClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+    <Link
+      to={`/zimmer/${zimmer.zimmerId}`}
+      style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
     >
-      <div className="zimmer-image-wrapper">
-        {images.length > 0 ? (
-          <img
-            src={`data:image/jpeg;base64,${images[currentImageIndex]}`}
-            alt={zimmer.nameZimmer}
-            className="zimmer-image"
-          />
-        ) : (
-          <div className="no-image-placeholder">אין תמונה</div>
-        )}
-
-        {images.length > 1 && (
-          <div className="thumbnails">
-            {images.map((img, idx) => (
-              <img
-                key={idx}
-                src={`data:image/jpeg;base64,${img}`}
-                className={`thumbnail ${idx === currentImageIndex ? 'active' : ''}`}
-                onClick={e => { e.stopPropagation(); setCurrentImageIndex(idx); }}
-              />
-            ))}
+      <div
+        className={isGrid ? 'zimmer-card-mini' : 'zimmer-card-wide'}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => { setIsHovered(false); setCurrentImgIndex(0); }}
+      >
+        <div className="card-content-side">
+          <div className="top-info">
+            <h3>{zimmer.nameZimmer}</h3>
+            <p className="city-tag">📍 {zimmer.city}</p>
           </div>
-        )}
-      </div>
 
-      <div className="card-content">
-        <h3>{zimmer.nameZimmer}</h3>
-        <p className="city">{zimmer.city}</p>
-        <p className="price-text">₪{zimmer.pricePerNight} ללילה</p>
+          {!isGrid && (
+            <p className="description-text">
+              {zimmer.description && zimmer.description.length > 140
+                ? `${zimmer.description.substring(0, 140)}…`
+                : zimmer.description}
+            </p>
+          )}
 
-        <div className="card-actions" onClick={e => e.stopPropagation()}>
-          <button className="fav-btn" onClick={() => dispatch(addToFavoriteZimmers(zimmer))}>
-            ❤️ מועדפים
-          </button>
+          <div className="price-footer">
+            <div className="price-tag">
+              <strong>₪{zimmer.pricePerNight.toLocaleString()}</strong>
+              <small>/ לילה</small>
+            </div>
 
-          {showActions && (
-            <>
-              <button className="edit-btn" onClick={onEdit}>✏️ ערוך</button>
-              <button className="delete-btn" onClick={onDelete}>🗑️ מחק</button>
-            </>
+            {showActions ? (
+              <div className="admin-actions" onClick={e => e.stopPropagation()}>
+                <button className="edit-btn" onClick={e => { e.preventDefault(); onEdit?.(); }}>
+                  עריכה
+                </button>
+                <button className="delete-btn" onClick={e => { e.preventDefault(); onDelete?.(); }}>
+                  מחיקה
+                </button>
+              </div>
+            ) : (
+              <button
+                className="heart-btn"
+                title="שמור למועדפים"
+                onClick={e => { e.preventDefault(); dispatch(addToFavoriteZimmers(zimmer)); }}
+              >
+                ♡
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="card-image-side">
+          {images.length > 0 ? (
+            <img
+              src={`data:image/jpeg;base64,${images[currentImgIndex]}`}
+              alt={zimmer.nameZimmer}
+              className="img-fill"
+            />
+          ) : (
+            <div className="no-img">אין תמונה</div>
+          )}
+          {zimmer.numRooms && (
+            <span className="rooms-badge">🛏 {zimmer.numRooms} חדרים</span>
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
