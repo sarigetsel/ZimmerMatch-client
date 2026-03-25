@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { addToFavoriteZimmers, Zimmer } from '../../redux/zimmerSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToFavoriteZimmers, removeFromFavoriteZimmers, Zimmer } from '../../redux/zimmerSlice';
 import { Link } from 'react-router-dom';
+import { RootState } from '../../../../app/store';
 import './ZimmerCard.css';
 
 interface ZimmerCardProps {
@@ -20,6 +21,9 @@ const ZimmerCard: React.FC<ZimmerCardProps> = ({
   onDelete,
 }) => {
   const dispatch = useDispatch();
+  const favoriteZimmers = useSelector((state: RootState) => state.zimmerState.listFavoriteZimmers || []);
+  const isFavorite = favoriteZimmers.some((fav: Zimmer) => fav.zimmerId === zimmer.zimmerId);
+  
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -35,6 +39,16 @@ const ZimmerCard: React.FC<ZimmerCardProps> = ({
     }
     return () => { if (interval) clearInterval(interval); };
   }, [isHovered, images.length]);
+
+  const handleHeartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isFavorite) {
+      dispatch(removeFromFavoriteZimmers(zimmer.zimmerId));
+    } else {
+      dispatch(addToFavoriteZimmers(zimmer));
+    }
+  };
 
   return (
     <Link
@@ -68,20 +82,16 @@ const ZimmerCard: React.FC<ZimmerCardProps> = ({
 
             {showActions ? (
               <div className="admin-actions" onClick={e => e.stopPropagation()}>
-                <button className="edit-btn" onClick={e => { e.preventDefault(); onEdit?.(); }}>
-                  עריכה
-                </button>
-                <button className="delete-btn" onClick={e => { e.preventDefault(); onDelete?.(); }}>
-                  מחיקה
-                </button>
+                <button className="edit-btn" onClick={e => { e.preventDefault(); onEdit?.(); }}>עריכה</button>
+                <button className="delete-btn" onClick={e => { e.preventDefault(); onDelete?.(); }}>מחיקה</button>
               </div>
             ) : (
               <button
-                className="heart-btn"
-                title="שמור למועדפים"
-                onClick={e => { e.preventDefault(); dispatch(addToFavoriteZimmers(zimmer)); }}
+                className={`heart-btn ${isFavorite ? 'active' : ''}`}
+                onClick={handleHeartClick}
+                style={{ color: isFavorite ? 'red' : 'gray', border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
               >
-                ♡
+                {isFavorite ? '❤️' : '♡'}
               </button>
             )}
           </div>

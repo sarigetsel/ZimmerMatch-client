@@ -8,7 +8,7 @@ import './Navbar.css';
 
 const Navbar = () => {
   const { currentUser } = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch();
+const { listFavoriteZimmers } = useSelector((state: RootState) => state.zimmerState);  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -33,6 +33,10 @@ const Navbar = () => {
         </div>
 
         <div className="nav-links">
+          <button onClick={() => navigate('/favorites')} className="nav-btn btn-favorites">
+            ❤️ מועדפים ({listFavoriteZimmers.length})
+          </button>
+
           {currentUser ? (
             <>
               <span className="nav-welcome">שלום, {currentUser.name}</span>
@@ -56,7 +60,7 @@ const Navbar = () => {
 
               {currentUser.role === 'Guest' && (
                 <button onClick={() => navigate('/my-bookings')} className="nav-btn btn-secondary">
-                  ההזמנות שלי
+                  הזמנות שלי
                 </button>
               )}
 

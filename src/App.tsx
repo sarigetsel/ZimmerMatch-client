@@ -10,22 +10,19 @@ import MyZimmers from './features/zimmer/components/myZimmers/myZimmers';
 import ZimmerDetails from './features/zimmer/components/zimmerDetails/zimmerDetails';
 import MyBookings from './features/booking/components/guestBooking';
 import OwnerBookings from './features/booking/components/ownerBooking/ownerBookings';
+import Favorites from './features/zimmer/components/favorites/favorites';
 import Home from './Home';
 
 function App() {
-
   const { currentUser } = useSelector((state: RootState) => state.user);
 
   return (
     <BrowserRouter>
       <Navbar />
-
       <div className="app-content" style={{ paddingTop: '70px' }}>
-
         <Routes>
-
           <Route path="/" element={<Home />} />
-
+          <Route path="/favorites" element={<Favorites />} /> {/* הוספת הניתוב */}
           <Route path="/zimmer/:id" element={<ZimmerDetails />} />
 
           <Route
@@ -63,9 +60,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-
         </Routes>
-
       </div>
     </BrowserRouter>
   );
