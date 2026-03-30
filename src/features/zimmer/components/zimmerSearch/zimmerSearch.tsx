@@ -14,8 +14,10 @@ const ZimmerSearch: React.FC<ZimmerSearchProps> = ({ onSearchChange, onToggleMap
     searchText: "",
     city: "",
     maxPrice: 15000,
+    numOfRooms: 0, 
     hasPool: false,
     hasJacuzzi: false,
+    hasSauna: false,
   });
 
   const { data: cities } = useGetCitiesQuery();
@@ -25,19 +27,32 @@ const ZimmerSearch: React.FC<ZimmerSearchProps> = ({ onSearchChange, onToggleMap
       FreeText: searchParams.searchText.trim() || undefined,
       City: searchParams.city.trim() || undefined,
       MaxPrice: searchParams.maxPrice,
+      NumOfRooms: searchParams.numOfRooms > 0 ? searchParams.numOfRooms : undefined,
       HasPool: searchParams.hasPool || undefined,
       HasJacuzzi: searchParams.hasJacuzzi || undefined,
+      HasSauna: searchParams.hasSauna || undefined,
     };
     onSearchChange(dto);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setSearchParams(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value
-    }));
-  };
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const { name, value, type } = e.target;
+  
+  let finalValue: string | number | boolean;
+
+  if (type === "checkbox") {
+    finalValue = (e.target as HTMLInputElement).checked;
+  } else if (name === "numOfRooms") {
+    finalValue = parseInt(value, 10) || 0;
+  } else {
+    finalValue = value;
+  }
+
+  setSearchParams(prev => ({
+    ...prev,
+    [name]: finalValue
+  }));
+};
 
   return (
     <div className="search-container-overlay">
@@ -67,6 +82,19 @@ const ZimmerSearch: React.FC<ZimmerSearchProps> = ({ onSearchChange, onToggleMap
               {cities?.map(c => <option key={c} value={c} />)}
             </datalist>
           </div>
+          {/* הוספת בחירת מספר חדרים */}
+          <div className="search-input-group">
+            <span className="input-label">חדרים</span>
+            <input
+              type="number"
+              name="numOfRooms"
+              min="0"
+              placeholder="כמה חדרים?"
+              value={searchParams.numOfRooms || ""}
+              onChange={handleChange}
+              className="rooms-input"
+            />
+          </div>
         </div>
 
         <div className="search-controls-row">
@@ -87,6 +115,10 @@ const ZimmerSearch: React.FC<ZimmerSearchProps> = ({ onSearchChange, onToggleMap
             <label className={`facility-pill ${searchParams.hasJacuzzi ? 'checked' : ''}`}>
               <input type="checkbox" name="hasJacuzzi" checked={searchParams.hasJacuzzi} onChange={handleChange} />
               🛁 ג'קוזי
+            </label>
+            <label className={`facility-pill ${searchParams.hasSauna ? 'checked' : ''}`}>
+              <input type="checkbox" name="hasSauna" checked={searchParams.hasSauna} onChange={handleChange} />
+              🔥 סאונה
             </label>
           </div>
           <div className="search-action-btns">

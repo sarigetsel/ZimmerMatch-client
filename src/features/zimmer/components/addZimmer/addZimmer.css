@@ -55,6 +55,33 @@
     margin-bottom: 5px;
 }
 
+.map-wrapper {
+    margin-bottom: 10px;
+}
+
+.map-container {
+    height: 250px;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    position: relative;
+}
+
+.leaflet-container {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.coords-display {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    padding: 0 5px;
+}
+
 .facilities-container {
     border: 1px solid #ccc;
     padding: 10px;

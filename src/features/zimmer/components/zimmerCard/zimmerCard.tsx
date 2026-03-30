@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { RootState } from '../../../../app/store';
 import './ZimmerCard.css';
 
+
 interface ZimmerCardProps {
   zimmer: Zimmer;
   viewType?: 'grid' | 'list';

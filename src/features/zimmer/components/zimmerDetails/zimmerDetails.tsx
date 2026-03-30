@@ -33,9 +33,9 @@ const facilitiesIconsMap: Record<number, React.ReactNode> = {
   [FacilityValues.Jacuzzi]: <Icons.FaHotTub />,
   [FacilityValues.Accessible]: <Icons.FaWheelchair />,
   [FacilityValues.AirConditioning]: <Icons.FaSnowflake />,
-  [FacilityValues.BBQ]: "גריל",
+  [FacilityValues.BBQ]: <Icons.FaFire />,
   [FacilityValues.Kitchen]: <Icons.FaUtensils />,
-  [FacilityValues.Heating]: <Icons.FaFire />,
+  [FacilityValues.Heating]: <Icons.FaThermometerHalf />,
   [FacilityValues.Playground]: <Icons.FaChild />,
   [FacilityValues.Seaview]: <Icons.FaWater />,
   [FacilityValues.PrivateParking]: <Icons.FaParking />,
@@ -62,7 +62,7 @@ const ZimmerDetails: React.FC = () => {
 
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const { data: zimmers, isLoading, isError } = useGetZimmersQuery();
 
   useEffect(() => {
@@ -85,64 +85,111 @@ const ZimmerDetails: React.FC = () => {
 
   const images = Array.isArray(zimmer.arrImages) ? zimmer.arrImages : [];
 
-  const facilitiesNum =
-    typeof zimmer.facilities === 'string'
-      ? parseInt(zimmer.facilities)
-      : zimmer.facilities;
+const rawFacilities = zimmer.facilities;
+  let facilitiesNum = 0;
 
-  const facilitiesArray =
-    typeof facilitiesNum === 'number'
-      ? (Object.values(FacilityValues) as number[])
-          .filter((value) => (facilitiesNum & value) === value)
-          .map((value) => ({
-            name: FacilityLabels[value] || '',
-            icon: facilitiesIconsMap[value] || <span>🔹</span>,
-          }))
-      : [];
+  if (typeof rawFacilities === 'number') {
+    facilitiesNum = rawFacilities;
+  } else if (typeof rawFacilities === 'string') {
+    const parsed = parseInt(rawFacilities, 10);
+    if (!isNaN(parsed)) {
+      facilitiesNum = parsed;
+    } else {
+      const facilityNames = rawFacilities.split(',').map(s => s.trim().toLowerCase());
+      
+      Object.entries(FacilityValues).forEach(([key, value]) => {
+        if (isNaN(Number(key)) && facilityNames.includes(key.toLowerCase())) {
+          facilitiesNum |= Number(value);
+        }
+      });
+    }
+  }
+
+  const facilitiesArray = facilitiesNum > 0
+    ? Object.entries(FacilityValues)
+        .filter(([key, value]) => {
+          const val = Number(value);
+          return isNaN(Number(key)) && val > 0 && (facilitiesNum & val) === val;
+        })
+        .map(([, value]) => ({
+          name: FacilityLabels[Number(value)] || "מתקן",
+          icon: facilitiesIconsMap[Number(value)] || <span>🔹</span>,
+        }))
+    : [];
+    console.log("Raw Facilities from API:", zimmer.facilities);
+console.log("Calculated facilitiesNum:", facilitiesNum);
+console.log("FacilityValues entries:", Object.entries(FacilityValues));
 
   return (
     <div className="zimmer-details-container" dir="rtl">
       <button className="back-btn" onClick={() => navigate(-1)}>
-        ⬅ חזרה
+        חזרה
       </button>
 
       <div className="zimmer-main">
         <div className="zimmer-info">
           <h1 className="zimmer-name">{zimmer.nameZimmer}</h1>
-          <p className="zimmer-city">📍 {zimmer.city}</p>
-          <p className="zimmer-price"><strong>₪{zimmer.pricePerNight}</strong> ללילה</p>
-          <p className="zimmer-rooms">מספר חדרים: {zimmer.numRooms}</p>
 
-          <div className="zimmer-facilities">
-            {facilitiesArray.map((f, idx) => (
-              <div key={idx} className="facility">
-                {f.icon && <span className="facility-icon">{f.icon}</span>}
-                <span className="facility-name">{f.name}</span>
+          <div className="zimmer-location-block">
+            <span className="zimmer-city">📍 {zimmer.city}</span>
+            {zimmer.address && (
+              <span className="zimmer-address">{zimmer.address}</span>
+            )}
+          </div>
+
+          <div className="zimmer-price-block">
+            <span className="zimmer-price-amount">₪{zimmer.pricePerNight}</span>
+            <span className="zimmer-price-label">ללילה</span>
+          </div>
+
+          <div className="zimmer-meta-row">
+            <div className="meta-chip">
+              <Icons.FaDoorOpen />
+              <span>{zimmer.numRooms} חדרים</span>
+            </div>
+          </div>
+
+          <div className="facilities-section">
+            <h3 className="facilities-title">
+              <Icons.FaStar className="facilities-title-icon" />
+              מתקנים
+            </h3>
+            {facilitiesArray.length > 0 ? (
+              <div className="zimmer-facilities">
+                {facilitiesArray.map((f, idx) => (
+                  <div key={idx} className="facility">
+                    <span className="facility-icon">{f.icon}</span>
+                    <span className="facility-name">{f.name}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              <p className="no-facilities">לא צוינו מתקנים לצימר זה</p>
+            )}
           </div>
 
           <button className="show-map-btn" onClick={() => setMapVisible(!mapVisible)}>
+            <Icons.FaMapMarkerAlt />
             {mapVisible ? "הסתר מפה" : "הצג מיקום במפה"}
           </button>
 
           {mapVisible && (
-            <div className="map-wrapper" style={{ marginTop: '15px' }}>
-              <div className="map-type-buttons" style={{ marginBottom: '10px', display: 'flex', gap: '5px' }}>
-                <button 
-                  className="map-btn" 
+            <div className="map-wrapper">
+              <div className="map-type-buttons">
+                <button
+                  className="map-btn"
                   onClick={() => setMapType("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")}
                 >
                   מפה רגילה
                 </button>
-                <button 
-                  className="map-btn" 
+                <button
+                  className="map-btn"
                   onClick={() => setMapType("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png")}
                 >
                   מפה טופוגרפית
                 </button>
               </div>
-              <div className="zimmer-inline-map" style={{ height: "300px", borderRadius: '8px', overflow: 'hidden' }}>
+              <div className="zimmer-inline-map">
                 <MapContainer
                   center={[zimmer.latitude, zimmer.longitude]}
                   zoom={14}
@@ -155,7 +202,10 @@ const ZimmerDetails: React.FC = () => {
             </div>
           )}
 
-          <p className="zimmer-description" style={{ marginTop: '20px' }}>{zimmer.description}</p>
+          <div className="zimmer-description-block">
+            <h3 className="description-title">אודות הצימר</h3>
+            <p className="zimmer-description">{zimmer.description}</p>
+          </div>
         </div>
 
         <div className="zimmer-gallery">
@@ -166,7 +216,6 @@ const ZimmerDetails: React.FC = () => {
                 className="main-image"
                 alt={zimmer.nameZimmer}
                 onClick={() => setModalOpen(true)}
-                style={{ cursor: 'pointer' }}
               />
               <div className="thumbnails-gallery">
                 {images.map((img, idx) => (
@@ -197,12 +246,17 @@ const ZimmerDetails: React.FC = () => {
 
       {modalOpen && (
         <div className="image-modal" onClick={() => setModalOpen(false)}>
-          <img 
-            src={`data:image/jpeg;base64,${images[currentImageIndex]}`} 
-            className="modal-image" 
-            alt="תצוגה מלאה" 
+          <img
+            src={`data:image/jpeg;base64,${images[currentImageIndex]}`}
+            className="modal-image"
+            alt="תצוגה מלאה"
           />
-          <button className="modal-close-btn" onClick={() => setModalOpen(false)}>✖</button>
+          <button
+            className="modal-close-btn"
+            onClick={(e) => { e.stopPropagation(); setModalOpen(false); }}
+          >
+            ✕
+          </button>
         </div>
       )}
     </div>

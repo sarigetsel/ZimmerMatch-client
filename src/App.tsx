@@ -22,7 +22,7 @@ function App() {
       <div className="app-content" style={{ paddingTop: '70px' }}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/favorites" element={<Favorites />} /> {/* הוספת הניתוב */}
+          <Route path="/favorites" element={<Favorites />} /> 
           <Route path="/zimmer/:id" element={<ZimmerDetails />} />
 
           <Route
