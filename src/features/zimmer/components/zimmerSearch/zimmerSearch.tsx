@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useGetCitiesQuery, ZimmerSearchDto } from "../../redux/zimmerApi";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -13,42 +13,45 @@ const ZimmerSearch: React.FC<ZimmerSearchProps> = ({ onSearchChange, onToggleMap
   const [searchParams, setSearchParams] = useState({
     searchText: "",
     city: "",
-    maxPrice: 3000,
+    maxPrice: 15000,
     hasPool: false,
     hasJacuzzi: false,
   });
 
   const { data: cities } = useGetCitiesQuery();
 
-  useEffect((): void => {
-    const mapped: ZimmerSearchDto = {
-      FreeText:   searchParams.searchText || undefined,
-      City:       searchParams.city        || undefined,
-      MaxPrice:   searchParams.maxPrice > 0 ? searchParams.maxPrice : undefined,
-      HasPool:    searchParams.hasPool     ? true : undefined,
-      HasJacuzzi: searchParams.hasJacuzzi  ? true : undefined,
+  const handleExecuteSearch = () => {
+    const dto: ZimmerSearchDto = {
+      FreeText: searchParams.searchText.trim() || undefined,
+      City: searchParams.city.trim() || undefined,
+      MaxPrice: searchParams.maxPrice,
+      HasPool: searchParams.hasPool || undefined,
+      HasJacuzzi: searchParams.hasJacuzzi || undefined,
     };
-    onSearchChange(mapped);
-  }, [searchParams, onSearchChange]);
+    onSearchChange(dto);
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setSearchParams({ ...searchParams, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setSearchParams(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
   };
 
   return (
     <div className="search-container-overlay">
       <div className="search-bar-row">
-
         <div className="search-inputs-row">
           <div className="search-input-group">
-            <span className="input-label">חיפוש</span>
+            <span className="input-label">חיפוש חופשי</span>
             <input
               type="text"
               name="searchText"
-              placeholder="שם, תיאור, מיקום…"
+              placeholder="הקלד טקסט..."
               value={searchParams.searchText}
               onChange={handleChange}
-              autoComplete="off"
+              onKeyDown={(e) => e.key === 'Enter' && handleExecuteSearch()}
             />
           </div>
           <div className="search-input-group">
@@ -56,68 +59,40 @@ const ZimmerSearch: React.FC<ZimmerSearchProps> = ({ onSearchChange, onToggleMap
             <input
               list="cities-list"
               name="city"
-              placeholder="כל הערים"
+              placeholder="בחר עיר..."
               value={searchParams.city}
               onChange={handleChange}
-              autoComplete="off"
             />
             <datalist id="cities-list">
-              {cities?.map((city: string) => <option key={city} value={city} />)}
+              {cities?.map(c => <option key={c} value={c} />)}
             </datalist>
           </div>
         </div>
 
         <div className="search-controls-row">
-
           <div className="slider-wrapper">
-            <span className="slider-label">
-              עד <span>₪{searchParams.maxPrice.toLocaleString()}</span>
-            </span>
-            <div className="slider-track">
-              <Slider
-                min={0}
-                max={15000}
-                step={100}
-                value={searchParams.maxPrice}
-                onChange={(v: number | number[]) =>
-                  setSearchParams({ ...searchParams, maxPrice: v as number })
-                }
-              />
-            </div>
+            <span className="slider-label">עד ₪{searchParams.maxPrice}</span>
+            <Slider
+              min={0}
+              max={15000}
+              value={searchParams.maxPrice}
+              onChange={(v) => setSearchParams(prev => ({ ...prev, maxPrice: v as number }))}
+            />
           </div>
-
-          <div className="controls-divider" />
-
           <div className="facilities-filter">
-            <label className={`facility-pill${searchParams.hasPool ? ' checked' : ''}`}>
-              <input
-                type="checkbox"
-                checked={searchParams.hasPool}
-                onChange={e => setSearchParams({ ...searchParams, hasPool: e.target.checked })}
-              />
+            <label className={`facility-pill ${searchParams.hasPool ? 'checked' : ''}`}>
+              <input type="checkbox" name="hasPool" checked={searchParams.hasPool} onChange={handleChange} />
               🏊 בריכה
             </label>
-            <label className={`facility-pill${searchParams.hasJacuzzi ? ' checked' : ''}`}>
-              <input
-                type="checkbox"
-                checked={searchParams.hasJacuzzi}
-                onChange={e => setSearchParams({ ...searchParams, hasJacuzzi: e.target.checked })}
-              />
-              🛁 ג׳קוזי
+            <label className={`facility-pill ${searchParams.hasJacuzzi ? 'checked' : ''}`}>
+              <input type="checkbox" name="hasJacuzzi" checked={searchParams.hasJacuzzi} onChange={handleChange} />
+              🛁 ג'קוזי
             </label>
           </div>
-
-          <div className="controls-divider" />
-
           <div className="search-action-btns">
-            <button className="map-btn" type="button" onClick={onToggleMap}>
-              🗺️ מפה
-            </button>
-            <button className="search-btn" type="button">
-              🔍 חפש
-            </button>
+            <button className="map-btn" onClick={onToggleMap}>🗺️ מפה</button>
+            <button className="search-btn" onClick={handleExecuteSearch}>🔍 חפש</button>
           </div>
-
         </div>
       </div>
     </div>

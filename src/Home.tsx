@@ -132,8 +132,8 @@ const Home: React.FC = () => {
                     <h2>מומלצים עבורכם</h2>
                   </div>
                   <div className="slider-nav">
-                    <button className="nav-btn" onClick={() => scroll('right')}>❯</button>
-                    <button className="nav-btn" onClick={() => scroll('left')}>❮</button>
+                    <button className="nav-btn" onClick={() => scroll('right')}>❮</button>
+                    <button className="nav-btn" onClick={() => scroll('left')}>❯</button>
                   </div>
                 </div>
                 <div className="horizontal-scroll-viewport" ref={scrollRef}>
