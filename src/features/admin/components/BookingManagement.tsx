@@ -21,7 +21,7 @@ export default function AdminBookings() {
     try {
       await updateBooking({
         id: selectedBooking.bookingId,
-        data: { ...selectedBooking, status: 2 } 
+        data: { ...selectedBooking, status: "Cancelled" } 
       }).unwrap()
       setModalOpen(false)
       alert("הביטול בוצע בהצלחה!")
@@ -60,16 +60,14 @@ export default function AdminBookings() {
               <td>{new Date(b.endDate).toLocaleDateString()}</td>
               <td>{b.totalPrice}</td>
               <td className={
-                b.status === 0 ? "status-pending" :
-                b.status === 1 ? "status-confirmed" :
+                b.status === "Pending" ? "status-pending" :
+                b.status === "Confirmed" ? "status-confirmed" :
                 "status-cancelled"
               }>
-                {b.status === 0 ? "Pending" :
-                 b.status === 1 ? "Confirmed" :
-                 "Cancelled"}
+                {b.status}
               </td>
               <td>
-                {b.status !== 2 && (
+                {b.status !== "Cancelled" && (
                   <button className="cancel-btn" onClick={() => handleOpenModal(b)}>בטל</button>
                 )}
               </td>

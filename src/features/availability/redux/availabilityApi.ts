@@ -23,18 +23,14 @@ export const availabilityApi = createApi({
     baseUrl: "https://localhost:7195/api/Availability",
 
     prepareHeaders: (headers) => {
-
       const token = localStorage.getItem("token")
-
       if (token)
         headers.set("Authorization", `Bearer ${token}`)
-
       return headers
     }
   }),
 
   tagTypes: ["availability"],
-
   endpoints: (builder) => ({
 
     getAvailabilityByZimmer: builder.query<Availability[], number>({

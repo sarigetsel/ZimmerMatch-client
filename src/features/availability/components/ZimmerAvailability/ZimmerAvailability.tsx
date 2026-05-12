@@ -48,12 +48,19 @@ export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: 
   };
 
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
-    if (view !== "month") return "";
-    if (isPast(date)) return "blocked-day";
-    if (isBooked(date)) return "booked-day";
-    if (range && date >= range[0] && date <= range[1]) return "selected-day";
-    return "";
-  };
+  if (view !== "month") return "";
+
+  const classes = [];
+
+  if (isPast(date)) classes.push("blocked-day");
+  if (isBooked(date)) classes.push("booked-day");
+  
+  if (range && date >= range[0] && date <= range[1]) {
+    classes.push("selected-day");
+  }
+
+  return classes.join(" ");
+};
 
   const nightsCount = () => {
     if (!range) return 0;
@@ -105,7 +112,7 @@ export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: 
         startDate: range[0].toISOString(),
         endDate: range[1].toISOString(),
         totalPrice,
-        status: 1,
+        status: "Confirmed",
       }).unwrap();
 
       alert("ההזמנה בוצעה בהצלחה!");

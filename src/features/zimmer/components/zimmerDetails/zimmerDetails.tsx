@@ -55,70 +55,67 @@ const yellowIcon = new L.Icon({
 });
 
 const ZimmerDetails: React.FC = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [mapVisible, setMapVisible] = useState(false);
-  const [mapType, setMapType] = useState("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const [modalOpen, setModalOpen] = useState(false);
+const [mapVisible, setMapVisible] = useState(false);
+const [mapType, setMapType] = useState("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+const { id } = useParams<{ id: string }>();
+const navigate = useNavigate();
 
-  const { data: zimmers, isLoading, isError } = useGetZimmersQuery();
+const { data: zimmers, isLoading, isError } = useGetZimmersQuery();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [id]);
+useEffect(() => {
+  window.scrollTo(0, 0);
+}, [id]);
 
-  if (isLoading) return <div className="loading-container">טוען נתונים...</div>;
-  if (isError || !zimmers) return <div className="error-container">שגיאה בטעינת הנתונים</div>;
+if (isLoading) return <div className="loading-container">טוען נתונים...</div>;
+if (isError || !zimmers) return <div className="error-container">שגיאה בטעינת הנתונים</div>;
 
-  const zimmer: Zimmer | undefined = zimmers.find((z) => Number(z.zimmerId) === Number(id));
+ const zimmer: Zimmer | undefined = zimmers.find((z) => Number(z.zimmerId) === Number(id));
 
-  if (!zimmer) {
-    return (
-      <div className="error-container">
-        <h2>הצימר לא נמצא</h2>
-        <button onClick={() => navigate('/')}>חזרה לדף הבית</button>
-      </div>
-    );
-  }
+if (!zimmer) {
+  return (
+    <div className="error-container">
+      <h2>הצימר לא נמצא</h2>
+      <button onClick={() => navigate('/')}>חזרה לדף הבית</button>
+    </div>
+  );
+}
 
-  const images = Array.isArray(zimmer.arrImages) ? zimmer.arrImages : [];
+const images = Array.isArray(zimmer.arrImages) ? zimmer.arrImages : [];
 
 const rawFacilities = zimmer.facilities;
-  let facilitiesNum = 0;
+let facilitiesNum = 0;
 
-  if (typeof rawFacilities === 'number') {
-    facilitiesNum = rawFacilities;
-  } else if (typeof rawFacilities === 'string') {
-    const parsed = parseInt(rawFacilities, 10);
-    if (!isNaN(parsed)) {
-      facilitiesNum = parsed;
-    } else {
-      const facilityNames = rawFacilities.split(',').map(s => s.trim().toLowerCase());
+if (typeof rawFacilities === 'number') {
+  facilitiesNum = rawFacilities;
+} else if (typeof rawFacilities === 'string') {
+  const parsed = parseInt(rawFacilities, 10);
+  if (!isNaN(parsed)) {
+    facilitiesNum = parsed;
+  } else {
+    const facilityNames = rawFacilities.split(',').map(s => s.trim().toLowerCase());
       
-      Object.entries(FacilityValues).forEach(([key, value]) => {
-        if (isNaN(Number(key)) && facilityNames.includes(key.toLowerCase())) {
-          facilitiesNum |= Number(value);
-        }
-      });
-    }
+    Object.entries(FacilityValues).forEach(([key, value]) => {
+      if (isNaN(Number(key)) && facilityNames.includes(key.toLowerCase())) {
+        facilitiesNum |= Number(value);
+      }
+    });
   }
+}
 
-  const facilitiesArray = facilitiesNum > 0
-    ? Object.entries(FacilityValues)
-        .filter(([key, value]) => {
-          const val = Number(value);
-          return isNaN(Number(key)) && val > 0 && (facilitiesNum & val) === val;
-        })
-        .map(([, value]) => ({
-          name: FacilityLabels[Number(value)] || "מתקן",
-          icon: facilitiesIconsMap[Number(value)] || <span>🔹</span>,
-        }))
-    : [];
-    console.log("Raw Facilities from API:", zimmer.facilities);
-console.log("Calculated facilitiesNum:", facilitiesNum);
-console.log("FacilityValues entries:", Object.entries(FacilityValues));
+const facilitiesArray = facilitiesNum > 0
+  ? Object.entries(FacilityValues)
+      .filter(([key, value]) => {
+        const val = Number(value);
+        return isNaN(Number(key)) && val > 0 && (facilitiesNum & val) === val;
+      })
+      .map(([, value]) => ({
+        name: FacilityLabels[Number(value)] || "מתקן",
+        icon: facilitiesIconsMap[Number(value)] || <span>🔹</span>,
+      }))
+  : [];
 
   return (
     <div className="zimmer-details-container" dir="rtl">
@@ -180,20 +177,25 @@ console.log("FacilityValues entries:", Object.entries(FacilityValues));
                   className="map-btn"
                   onClick={() => setMapType("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")}
                 >
-                  מפה רגילה
+                 רגילה
+                </button>
+                <button
+                  className="map-btn"
+                  onClick={() => setMapType("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png")}
+                >
+                   חמה
                 </button>
                 <button
                   className="map-btn"
                   onClick={() => setMapType("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png")}
                 >
-                  מפה טופוגרפית
+                   טופוגרפית
                 </button>
               </div>
               <div className="zimmer-inline-map">
                 <MapContainer
                   center={[zimmer.latitude, zimmer.longitude]}
-                  zoom={14}
-                  style={{ height: "100%", width: "100%" }}
+                  zoom={10}
                 >
                   <TileLayer url={mapType} />
                   <Marker position={[zimmer.latitude, zimmer.longitude]} icon={yellowIcon} />

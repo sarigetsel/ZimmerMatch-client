@@ -10,7 +10,7 @@ export interface Booking {
   startDate: string;
   endDate: string;
   totalPrice: number;
-  status: number;
+  status: "Pending" | "Confirmed" | "Cancelled";
 }
 
 interface BookingState {

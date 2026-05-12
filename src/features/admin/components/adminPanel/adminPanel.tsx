@@ -2,7 +2,6 @@ import { useState } from 'react';
 import UserManagement from '../userManagement';
 import ZimmerManagement from '../zimmerManagement';
 import AdminBookings from '../BookingManagement';
-
 import './AdminPanel.css';
 
 const AdminPanel = () => {

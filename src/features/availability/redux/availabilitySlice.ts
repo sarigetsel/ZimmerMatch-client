@@ -18,15 +18,11 @@ const initialState: AvailabilityState = {
 }
 
 const availabilitySlice = createSlice({
-
   name: "availability",
-
   initialState,
-
   reducers: {},
 
   extraReducers: (builder) => {
-
     builder.addMatcher(
       availabilityApi.endpoints.getAvailabilityByZimmer.matchFulfilled,
       (state, action) => {

@@ -1,3 +1,9 @@
+.map-container-inner {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+}
+
 .map-layer-controls {
   position: absolute;
   top: 14px;
@@ -5,7 +11,7 @@
   z-index: 1000;
   display: flex;
   gap: 6px;
-  background: rgba(255,252,248,0.94);
+  background: rgba(255, 252, 248, 0.94);
   backdrop-filter: blur(12px);
   padding: 7px 10px;
   border-radius: var(--r-pill);
@@ -20,7 +26,7 @@
   padding: 5px 13px;
   border-radius: var(--r-pill);
   cursor: pointer;
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -30,7 +36,7 @@
 .map-layer-controls button:hover {
   border-color: var(--clay);
   color: var(--clay-deep);
-  background: rgba(181,146,106,0.08);
+  background: rgba(181, 146, 106, 0.08);
 }
 
 .map-layer-controls button.active {
@@ -48,8 +54,14 @@
   overflow: hidden;
 }
 
-.leaflet-popup-content { margin: 0 !important; padding: 0 !important; }
-.leaflet-popup-tip { background: var(--surface) !important; }
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-tip {
+  background: var(--surface) !important;
+}
 
 .map-popup {
   padding: 18px 20px;
@@ -58,7 +70,7 @@
 }
 
 .map-popup h3 {
-  font-family: 'Frank Ruhl Libre', serif;
+  font-family: "Frank Ruhl Libre", serif;
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--ink);
@@ -76,7 +88,7 @@
 }
 
 .popup-price {
-  font-family: 'Frank Ruhl Libre', serif;
+  font-family: "Frank Ruhl Libre", serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--ink);
@@ -88,7 +100,7 @@
 .popup-price small {
   font-size: 0.78rem;
   color: var(--stone);
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-weight: 300;
   margin-right: 3px;
 }
@@ -101,7 +113,7 @@
   padding: 10px 16px;
   border-radius: var(--r-sm);
   cursor: pointer;
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -115,7 +127,7 @@
 }
 
 .leaflet-control-attribution {
-  background: rgba(247,243,238,0.85) !important;
+  background: rgba(247, 243, 238, 0.85) !important;
   color: var(--stone) !important;
   font-size: 10px !important;
 }

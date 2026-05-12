@@ -8,7 +8,7 @@ import './Navbar.css';
 
 const Navbar = () => {
   const { currentUser } = useSelector((state: RootState) => state.user);
-const { listFavoriteZimmers } = useSelector((state: RootState) => state.zimmerState);  const dispatch = useDispatch();
+  const { listFavoriteZimmers } = useSelector((state: RootState) => state.zimmerState);  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -28,13 +28,13 @@ const { listFavoriteZimmers } = useSelector((state: RootState) => state.zimmerSt
     <>
       <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
         <div className="nav-logo" onClick={() => navigate('/')}>
-          <span className="logo-main">Zimmer</span>
           <span className="logo-accent">Match</span>
+          <span className="logo-main">Zimmer</span>
         </div>
 
         <div className="nav-links">
           <button onClick={() => navigate('/favorites')} className="nav-btn btn-favorites">
-            ❤️ מועדפים ({listFavoriteZimmers.length})
+             מועדפים ❤️({listFavoriteZimmers.length})
           </button>
 
           {currentUser ? (

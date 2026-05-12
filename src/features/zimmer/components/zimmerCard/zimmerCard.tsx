@@ -35,7 +35,7 @@ const ZimmerCard: React.FC<ZimmerCardProps> = ({
     let interval: ReturnType<typeof setInterval> | undefined;
     if (isHovered && images.length > 1) {
       interval = setInterval(() => {
-        setCurrentImgIndex(prev => (prev + 1) % images.length);
+      setCurrentImgIndex(prev => (prev + 1) % images.length);
       }, 900);
     }
     return () => { if (interval) clearInterval(interval); };
@@ -90,7 +90,6 @@ const ZimmerCard: React.FC<ZimmerCardProps> = ({
               <button
                 className={`heart-btn ${isFavorite ? 'active' : ''}`}
                 onClick={handleHeartClick}
-                style={{ color: isFavorite ? 'red' : 'gray', border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
               >
                 {isFavorite ? '❤️' : '♡'}
               </button>

@@ -34,7 +34,7 @@ const zimmerSlice = createSlice({
     name: "zimmer",
     initialState,
     reducers: {
-addToFavoriteZimmers: (state, action: PayloadAction<Zimmer>) => {
+    addToFavoriteZimmers: (state, action: PayloadAction<Zimmer>) => {
     const exists = state.listFavoriteZimmers.find(
         z => z.zimmerId === action.payload.zimmerId
     );
@@ -46,9 +46,7 @@ addToFavoriteZimmers: (state, action: PayloadAction<Zimmer>) => {
                 ? [action.payload.arrImages[0]] 
                 : [] 
         };
-        
         state.listFavoriteZimmers.push(limitedZimmer);
-        
         try {
             localStorage.setItem("favoriteZimmers", JSON.stringify(state.listFavoriteZimmers));
         } catch (e) {
@@ -56,16 +54,16 @@ addToFavoriteZimmers: (state, action: PayloadAction<Zimmer>) => {
         }
     }
 },
-        removeFromFavoriteZimmers: (state, action: PayloadAction<number>) => {
-            state.listFavoriteZimmers = state.listFavoriteZimmers.filter(
-                z => z.zimmerId !== action.payload
-            );
-            localStorage.setItem("favoriteZimmers", JSON.stringify(state.listFavoriteZimmers));
-        },
-        setSelectedZimmer: (state, action: PayloadAction<Zimmer | null>) => {
-            state.selectedZimmer = action.payload;
-        },
-    }
+    removeFromFavoriteZimmers: (state, action: PayloadAction<number>) => {
+        state.listFavoriteZimmers = state.listFavoriteZimmers.filter(
+            z => z.zimmerId !== action.payload
+        );
+        localStorage.setItem("favoriteZimmers", JSON.stringify(state.listFavoriteZimmers));
+    },
+    setSelectedZimmer: (state, action: PayloadAction<Zimmer | null>) => {
+        state.selectedZimmer = action.payload;
+    },
+}
 });
 
 export const { 

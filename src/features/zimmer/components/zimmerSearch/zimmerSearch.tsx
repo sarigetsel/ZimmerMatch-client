@@ -82,7 +82,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
               {cities?.map(c => <option key={c} value={c} />)}
             </datalist>
           </div>
-          {/* הוספת בחירת מספר חדרים */}
+
           <div className="search-input-group">
             <span className="input-label">חדרים</span>
             <input
@@ -107,6 +107,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
               onChange={(v) => setSearchParams(prev => ({ ...prev, maxPrice: v as number }))}
             />
           </div>
+          
           <div className="facilities-filter">
             <label className={`facility-pill ${searchParams.hasPool ? 'checked' : ''}`}>
               <input type="checkbox" name="hasPool" checked={searchParams.hasPool} onChange={handleChange} />

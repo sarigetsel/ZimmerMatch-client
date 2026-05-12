@@ -1,10 +1,10 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import "./zimmerMap.css";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { type Zimmer } from "../../redux/zimmerSlice";
+import "leaflet/dist/leaflet.css";
+import "./zimmerMap.css";
 
 interface ZimmerMapProps {
   zimmers: Zimmer[];
@@ -12,8 +12,10 @@ interface ZimmerMapProps {
 }
 
 const goldMarker = new L.Icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -21,9 +23,9 @@ const goldMarker = new L.Icon({
 });
 
 const mapLayers: Record<string, string> = {
-  "רגילה": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  "חמה":   "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
-  "טופו":  "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+  רגילה: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  חמה: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+  טופוגרפית: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
 };
 
 const ZimmerMap: React.FC<ZimmerMapProps> = ({ zimmers, inline = false }) => {
@@ -33,7 +35,8 @@ const ZimmerMap: React.FC<ZimmerMapProps> = ({ zimmers, inline = false }) => {
   useEffect(() => {
     const handler = (e: CustomEvent) => setActiveLayer(e.detail);
     window.addEventListener("changeMapType", handler as EventListener);
-    return () => window.removeEventListener("changeMapType", handler as EventListener);
+    return () =>
+      window.removeEventListener("changeMapType", handler as EventListener);
   }, []);
 
   const center: [number, number] =
@@ -42,10 +45,16 @@ const ZimmerMap: React.FC<ZimmerMapProps> = ({ zimmers, inline = false }) => {
       : [32.0853, 34.7818];
 
   return (
-    <div style={{ width: "100%", height: inline ? "100%" : "100vh", position: "relative" }}>
-      {/* Layer controls */}
+    <div
+      className="map-container"
+      style={{
+        width: "100%",
+        height: inline ? "100%" : "100vh",
+        position: "relative",
+      }}
+    >
       <div className="map-layer-controls">
-        {Object.keys(mapLayers).map(name => (
+        {Object.keys(mapLayers).map((name) => (
           <button
             key={name}
             className={activeLayer === name ? "active" : ""}
@@ -56,15 +65,15 @@ const ZimmerMap: React.FC<ZimmerMapProps> = ({ zimmers, inline = false }) => {
         ))}
       </div>
 
-      <MapContainer
-        center={center}
-        zoom={12}
-        style={{ width: "100%", height: "100%", minHeight: "300px" }}
-      >
+      <MapContainer center={center} zoom={6} className="map-container-inner">
         <TileLayer url={mapLayers[activeLayer]} />
 
-        {zimmers.map(z => (
-          <Marker key={z.zimmerId} position={[z.latitude, z.longitude]} icon={goldMarker}>
+        {zimmers.map((z) => (
+          <Marker
+            key={z.zimmerId}
+            position={[z.latitude, z.longitude]}
+            icon={goldMarker}
+          >
             <Popup>
               <div className="map-popup">
                 <h3>{z.nameZimmer}</h3>
