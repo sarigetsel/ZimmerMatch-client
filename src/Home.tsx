@@ -4,7 +4,7 @@ import ZimmerList from './features/zimmer/components/zimmerList/zimmerList';
 import ZimmerMap from './features/zimmer/components/zimmerMap/zimmerMap';
 import { useSearchZimmersQuery, ZimmerSearchDto } from './features/zimmer/redux/zimmerApi';
 import { Zimmer } from './features/zimmer/redux/zimmerSlice';
-import './App.css';
+import './App.scss';
 
 const Footer: React.FC = () => (
   <footer className="site-footer">

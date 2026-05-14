@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ZimmerCard from '../zimmerCard/zimmerCard';
 import { Zimmer } from '../../redux/zimmerSlice';
 import { RootState } from '../../../../app/store';
-import "./favorites.css";
+import "./favorites.scss";
 
 const Favorites: React.FC = () => {
   const navigate = useNavigate();

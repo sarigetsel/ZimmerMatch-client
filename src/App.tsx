@@ -1,4 +1,4 @@
-import './App.css'
+import './App.scss'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './features/user/components/navbar/navbar';
 import AdminPanel from './features/admin/components/adminPanel/adminPanel';

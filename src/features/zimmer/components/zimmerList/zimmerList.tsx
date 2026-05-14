@@ -1,6 +1,6 @@
 import ZimmerCard from '../zimmerCard/zimmerCard';
 import { type Zimmer } from '../../redux/zimmerSlice';
-import './zimmerList.css';
+import './zimmerList.scss';
 
 interface Props {
   zimmers: Zimmer[];

@@ -1,5 +1,5 @@
 import { useGetGuestBookingsQuery } from "../../redux/bookingApi";
-import "./guestBooking.css";
+import "./guestBooking.scss";
 
 export default function MyBookings() {
 const { data: bookings, isLoading, isError } = useGetGuestBookingsQuery();

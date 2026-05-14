@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetZimmersQuery } from '../../redux/zimmerApi';
-import './zimmerDetails.css';
+import './zimmerDetails.scss';
 import { FacilityValues, FacilityLabels } from '../../../../common/constants/enums';
 import * as Icons from 'react-icons/fa';
 import ZimmerAvailability from "../../../availability/components/ZimmerAvailability/ZimmerAvailability";

@@ -1,5 +1,5 @@
 import { useGetOwnerBookingsQuery } from "../../redux/bookingApi";
-import "./ownerBooking.css";
+import "./ownerBooking.scss";
 
 export default function OwnerBookings() {
 const { data: bookings, isLoading, isError } = useGetOwnerBookingsQuery();

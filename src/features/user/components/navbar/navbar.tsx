@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { type RootState } from '../../../../app/store';
 import { logout } from '../../redux/userSlice';
 import LoginModal from '.././loginModal/loginModal';
-import './Navbar.css';
+import './Navbar.scss';
 
 const Navbar = () => {
   const { currentUser } = useSelector((state: RootState) => state.user);

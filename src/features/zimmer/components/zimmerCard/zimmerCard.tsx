@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToFavoriteZimmers, removeFromFavoriteZimmers, Zimmer } from '../../redux/zimmerSlice';
 import { Link } from 'react-router-dom';
 import { RootState } from '../../../../app/store';
-import './ZimmerCard.css';
+import './ZimmerCard.scss';
 
 
 interface ZimmerCardProps {

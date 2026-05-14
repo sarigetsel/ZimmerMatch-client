@@ -5,7 +5,7 @@ import { FacilityValues, FacilityLabels } from "../../../../common/constants/enu
 import L from "leaflet";
 import type { Zimmer } from "../../redux/zimmerSlice";
 import "leaflet/dist/leaflet.css";
-import "./AddZimmer.css";
+import "./AddZimmer.scss";
 
 const markerIcon = new L.Icon({
   iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",

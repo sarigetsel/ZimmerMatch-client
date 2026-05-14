@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { type Zimmer } from "../../redux/zimmerSlice";
 import "leaflet/dist/leaflet.css";
-import "./zimmerMap.css";
+import "./zimmerMap.scss";
 
 interface ZimmerMapProps {
   zimmers: Zimmer[];

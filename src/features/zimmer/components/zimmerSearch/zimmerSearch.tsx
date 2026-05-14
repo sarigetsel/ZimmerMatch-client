@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useGetCitiesQuery, ZimmerSearchDto } from "../../redux/zimmerApi";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import "./zimmerSearch.css";
+import "./zimmerSearch.scss";
 
 interface ZimmerSearchProps {
   onSearchChange: (params: ZimmerSearchDto) => void;

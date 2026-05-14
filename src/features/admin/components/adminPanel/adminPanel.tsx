@@ -2,7 +2,7 @@ import { useState } from 'react';
 import UserManagement from '../userManagement';
 import ZimmerManagement from '../zimmerManagement';
 import AdminBookings from '../BookingManagement';
-import './AdminPanel.css';
+import './AdminPanel.scss';
 
 const AdminPanel = () => {
   const [tab, setTab] = useState<'users' | 'zimmers' | 'bookings'>('users');

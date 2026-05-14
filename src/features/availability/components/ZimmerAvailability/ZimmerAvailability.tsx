@@ -1,6 +1,6 @@
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./ZimmerAvailability.css";
+import "./ZimmerAvailability.scss";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useGetAvailabilityByZimmerQuery, useBlockDayMutation } from "../../redux/availabilityApi";
