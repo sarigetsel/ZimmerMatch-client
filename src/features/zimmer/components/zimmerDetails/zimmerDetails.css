@@ -510,3 +510,248 @@
     padding: 20px;
   }
 }
+/* ─── OWNER CONTACT ─────────────────────────────────────── */
+.availability-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 60px 0 24px;
+  flex-wrap: wrap;
+}
+
+.availability-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1208;
+  margin: 0;
+}
+
+.contact-trigger-wrapper {
+  position: relative;
+}
+
+.contact-trigger-card {
+  background: #fff;
+  border: 1px solid rgba(26, 18, 8, 0.1);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  min-width: 240px;
+  box-shadow: 0 4px 18px rgba(26, 18, 8, 0.06);
+}
+
+.contact-trigger-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(26, 18, 8, 0.12);
+}
+
+.avatar-ring {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #1a1208;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f5f0e8;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.trigger-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.trigger-label {
+  font-size: 11px;
+  color: #8a7560;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.trigger-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1208;
+  margin-top: 2px;
+}
+
+.trigger-chevron {
+  margin-right: auto;
+  color: #8a7560;
+  font-size: 14px;
+  transition: transform 0.25s;
+}
+
+.contact-trigger-card.open .trigger-chevron {
+  transform: rotate(180deg);
+}
+
+
+.contact-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 320px;
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  z-index: 1000;
+  border: 1px solid rgba(26, 18, 8, 0.08);
+  box-shadow: 0 18px 40px rgba(26, 18, 8, 0.16);
+  animation: dropdownFade 0.22s ease;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-header {
+  background: #1a1208;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.panel-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f5f0e8;
+}
+
+.panel-host-label {
+  font-size: 11px;
+  color: rgba(245, 240, 232, 0.55);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panel-host-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f5f0e8;
+  margin-top: 3px;
+}
+
+.panel-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 0.2s ease;
+}
+
+.panel-action.phone {
+  background: #f5f0e8;
+  border-color: rgba(26, 18, 8, 0.1);
+}
+
+.panel-action.phone:hover {
+  background: #ede6d8;
+}
+
+.panel-action.phone svg,
+.panel-action.phone .action-number {
+  color: #1a1208;
+}
+
+.panel-action.whatsapp {
+  background: #25d366;
+  border-color: #1da851;
+}
+
+.panel-action.whatsapp:hover {
+  background: #1db954;
+}
+
+.panel-action.whatsapp svg,
+.panel-action.whatsapp .action-label,
+.panel-action.whatsapp .action-number,
+.panel-action.whatsapp .action-arrow {
+  color: #fff;
+}
+
+.action-text {
+  flex: 1;
+}
+
+.action-label {
+  font-size: 11px;
+  color: #8a7560;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.action-number {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1208;
+  margin-top: 2px;
+}
+
+.action-arrow {
+  font-size: 14px;
+  color: rgba(26, 18, 8, 0.3);
+}
+
+.panel-divider {
+  height: 1px;
+  background: rgba(26, 18, 8, 0.08);
+}
+
+.panel-note {
+  font-size: 11px;
+  color: #8a7560;
+  text-align: center;
+  padding: 4px 0 8px;
+}
+
+
+@media (max-width: 768px) {
+  .availability-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .contact-trigger-card {
+    width: 100%;
+  }
+
+  .contact-dropdown-panel {
+    width: 100%;
+    left: 0;
+  }
+}

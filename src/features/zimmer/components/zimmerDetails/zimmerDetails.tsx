@@ -23,6 +23,10 @@ interface Zimmer {
   createdAt: string;
   arrImages?: string[];
   facilities?: number | string;
+  owner?: {
+    name: string;
+    phone: string;
+  };
 }
 
 const facilitiesIconsMap: Record<number, React.ReactNode> = {
@@ -68,7 +72,7 @@ const MapResizer = () => {
 
 const ZimmerDetails: React.FC = () => {
 const [currentImageIndex, setCurrentImageIndex] = useState(0);
-const [modalOpen, setModalOpen] = useState(false);
+const [modalOpen, setModalOpen] = useState<string | null>(null);
 const [mapVisible, setMapVisible] = useState(false);
 const [mapType, setMapType] = useState("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
 
@@ -151,6 +155,7 @@ const facilitiesArray = facilitiesNum > 0
             <span className="zimmer-price-label">ללילה</span>
           </div>
 
+
           <div className="zimmer-meta-row">
             <div className="meta-chip">
               <Icons.FaDoorOpen />
@@ -230,7 +235,7 @@ const facilitiesArray = facilitiesNum > 0
                 src={`data:image/jpeg;base64,${images[currentImageIndex]}`}
                 className="main-image"
                 alt={zimmer.nameZimmer}
-                onClick={() => setModalOpen(true)}
+                onClick={() => setModalOpen('image')}
               />
               <div className="thumbnails-gallery">
                 {images.map((img, idx) => (
@@ -250,17 +255,98 @@ const facilitiesArray = facilitiesNum > 0
         </div>
       </div>
 
-      <h2 className="availability-title">בדיקת זמינות</h2>
-      <div className="availability-section">
-        <ZimmerAvailability
-          zimmerId={zimmer.zimmerId}
-          pricePerNight={zimmer.pricePerNight}
-          zimmer={zimmer}
-        />
+<div className="availability-header">
+  <h2 className="availability-title">בדיקת זמינות</h2>
+
+  <div className="contact-trigger-wrapper">
+    <button
+      className={`contact-trigger-card ${modalOpen === 'contact' ? 'open' : ''}`}
+      onClick={() => setModalOpen(modalOpen === 'contact' ? null : 'contact')}
+    >
+      <div className="avatar-ring">
+        <Icons.FaUser />
       </div>
 
-      {modalOpen && (
-        <div className="image-modal" onClick={() => setModalOpen(false)}>
+      <div className="trigger-text">
+        <span className="trigger-label">מארח</span>
+        <span className="trigger-name">
+          {zimmer.owner?.name || 'בעלי הצימר'}
+        </span>
+      </div>
+
+      <Icons.FaChevronDown className="trigger-chevron" />
+    </button>
+
+    {modalOpen === 'contact' && zimmer.owner && (
+      <div className="contact-dropdown-panel">
+        <div className="panel-header">
+          <div className="panel-avatar">
+            {zimmer.owner.name.slice(0, 2)}
+          </div>
+
+          <div>
+            <div className="panel-host-label">מארח הצימר</div>
+            <div className="panel-host-name">
+              {zimmer.owner.name}
+            </div>
+          </div>
+        </div>
+
+        <div className="panel-body">
+          <a
+            className="panel-action phone"
+            href={`tel:${zimmer.owner.phone}`}
+          >
+            <Icons.FaPhoneAlt />
+
+            <div className="action-text">
+              <div className="action-label">טלפון</div>
+              <div className="action-number">
+                {zimmer.owner.phone}
+              </div>
+            </div>
+
+            <Icons.FaChevronLeft className="action-arrow" />
+          </a>
+
+          <div className="panel-divider" />
+
+          <a
+            className="panel-action whatsapp"
+            href={`https://wa.me/972${zimmer.owner.phone
+              .replace(/^0/, '')
+              .replace(/-/g, '')}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Icons.FaWhatsapp />
+
+            <div className="action-text">
+              <div className="action-label">WhatsApp</div>
+              <div className="action-number">שלח הודעה</div>
+            </div>
+
+            <Icons.FaChevronLeft className="action-arrow" />
+          </a>
+
+          <div className="panel-note">
+            בדרך כלל עונה תוך שעה
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
+<div className="availability-section">
+  <ZimmerAvailability
+    zimmerId={zimmer.zimmerId}
+    pricePerNight={zimmer.pricePerNight}
+    zimmer={zimmer}
+  />
+</div>
+{modalOpen && (
+        <div className="image-modal" onClick={() => setModalOpen(null)}>
           <img
             src={`data:image/jpeg;base64,${images[currentImageIndex]}`}
             className="modal-image"
@@ -268,7 +354,7 @@ const facilitiesArray = facilitiesNum > 0
           />
           <button
             className="modal-close-btn"
-            onClick={(e) => { e.stopPropagation(); setModalOpen(false); }}
+            onClick={(e) => { e.stopPropagation(); setModalOpen(null); }}
           >
             ✕
           </button>
