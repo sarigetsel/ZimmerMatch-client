@@ -245,6 +245,7 @@ const facilitiesArray = facilitiesNum > 0
                     className={`thumbnail ${idx === currentImageIndex ? "active" : ""}`}
                     onClick={() => setCurrentImageIndex(idx)}
                     alt={`תמונה ${idx + 1}`}
+                    loading="lazy"
                   />
                 ))}
               </div>

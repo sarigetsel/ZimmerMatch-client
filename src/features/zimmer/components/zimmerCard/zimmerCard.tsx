@@ -106,6 +106,7 @@ console.log("Current Image Source:", `data:image/jpeg;base64,${images[currentImg
     src={`data:image/png;base64,${images[currentImgIndex]}`}
     alt={zimmer.nameZimmer}
     className="img-fill"
+    loading="lazy"
     onError={(e) => {
       e.currentTarget.src = `data:image/jpeg;base64,${images[currentImgIndex]}`;
     }}
