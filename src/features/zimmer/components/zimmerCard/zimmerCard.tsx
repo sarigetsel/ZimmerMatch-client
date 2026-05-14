@@ -51,6 +51,9 @@ const ZimmerCard: React.FC<ZimmerCardProps> = ({
     }
   };
 
+console.log("Current Images Array:", images);
+console.log("Current Image Source:", `data:image/jpeg;base64,${images[currentImgIndex]}`);
+
   return (
     <Link
       to={`/zimmer/${zimmer.zimmerId}`}
@@ -98,15 +101,18 @@ const ZimmerCard: React.FC<ZimmerCardProps> = ({
         </div>
 
         <div className="card-image-side">
-          {images.length > 0 ? (
-            <img
-              src={`data:image/jpeg;base64,${images[currentImgIndex]}`}
-              alt={zimmer.nameZimmer}
-              className="img-fill"
-            />
-          ) : (
-            <div className="no-img">אין תמונה</div>
-          )}
+         {images.length > 0 && images[currentImgIndex] ? (
+  <img
+    src={`data:image/png;base64,${images[currentImgIndex]}`}
+    alt={zimmer.nameZimmer}
+    className="img-fill"
+    onError={(e) => {
+      e.currentTarget.src = `data:image/jpeg;base64,${images[currentImgIndex]}`;
+    }}
+  />
+) : (
+  <div className="no-img">אין תמונה זמינה</div>
+)}
           {zimmer.numRooms && (
             <span className="rooms-badge">🛏 {zimmer.numRooms} חדרים</span>
           )}

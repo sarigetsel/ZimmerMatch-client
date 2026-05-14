@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker,useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import React, { useState, useEffect } from 'react';
@@ -53,6 +53,18 @@ const yellowIcon = new L.Icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41]
 });
+
+const MapResizer = () => {
+  const map = useMap();
+  const { useEffect } = React; 
+  useEffect(() => {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 250); 
+  }, [map]);
+  return null;
+};
+
 
 const ZimmerDetails: React.FC = () => {
 const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -199,6 +211,7 @@ const facilitiesArray = facilitiesNum > 0
                 >
                   <TileLayer url={mapType} />
                   <Marker position={[zimmer.latitude, zimmer.longitude]} icon={yellowIcon} />
+                  <MapResizer />
                 </MapContainer>
               </div>
             </div>

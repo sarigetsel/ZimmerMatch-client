@@ -279,7 +279,11 @@
 .zimmer-inline-map {
   height: 280px;
 }
-
+.zimmer-inline-map .leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1; 
+}
 /* ─── DESCRIPTION ───────────────────────────────────────── */
 .zimmer-description-block {
   padding-top: 28px;

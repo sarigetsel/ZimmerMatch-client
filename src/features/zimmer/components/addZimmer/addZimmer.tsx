@@ -39,6 +39,13 @@ const MapResizer = () => {
   return null;
 };
 
+const formatImageSrc = (imgData: number[] | string): string => {
+  if (!imgData) return "";
+  if (typeof imgData === 'string') return imgData;
+  const binary = String.fromCharCode(...(imgData as number[]));
+  return `data:image/jpeg;base64,${window.btoa(binary)}`;
+};
+
 export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
   const [addZimmer, { isLoading: isAdding }] = useAddZimmerMutation();
   const [updateZimmer, { isLoading: isUpdating }] = useUpdateZimmerMutation();
@@ -66,7 +73,8 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
     facilities: getInitialFacilities(),
   });
 
-  const [previews, setPreviews] = useState<string[]>(existingZimmer?.arrImages || []);
+  const [previews, setPreviews] = useState<(number[] | string)[]>(existingZimmer?.arrImages || []);
+  const [newFiles, setNewFiles] = useState<File[]>([]);
 
   const LocationPicker = () => {
     useMapEvents({
@@ -103,6 +111,7 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
     const files = e.target.files;
     if (files) {
       const fileArray = Array.from(files);
+      setNewFiles((prev) => [...prev, ...fileArray]);
       const newPreviews = fileArray.map((file) => URL.createObjectURL(file));
       setPreviews((prev) => [...prev, ...newPreviews]);
     }
@@ -127,6 +136,7 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const data = new FormData();
+
     data.append("NameZimmer", formData.nameZimmer);
     data.append("Description", formData.description || "");
     data.append("City", formData.city || "");
@@ -137,20 +147,38 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
     data.append("PricePerNight", formData.pricePerNight.toString());
     data.append("OwnerId", formData.ownerId.toString());
 
-    const facilitiesSum = formData.facilities.reduce((acc, curr) => acc + curr, 0);
-    data.append("Facilities", facilitiesSum.toString());
-    const createdAt = existingZimmer?.createdAt || new Date().toISOString();
+   formData.facilities.forEach((facilityValue) => {
+    const facilityName = FacilityValues[facilityValue];
+    
+    if (facilityName !== undefined) {
+        data.append("Facilities", String(facilityName));
+    } else {
+        console.warn(`Value ${facilityValue} not found in FacilityValues`);
+    }
+});
+
+    const createdAt = existingZimmer?.createdAt 
+    ? new Date(existingZimmer.createdAt).toISOString().split('.')[0] 
+    : new Date().toISOString().split('.')[0];
+
     data.append("CreatedAt", createdAt);
 
-    if (fileInputRef.current?.files) {
-      Array.from(fileInputRef.current.files).forEach((file) => {
+    if (newFiles.length > 0) {
+      newFiles.forEach((file) => {
         data.append("ImageFiles", file);
       });
     }
 
-    if (existingZimmer) {
-      data.append("ZimmerId", existingZimmer.zimmerId.toString());
+    if (existingZimmer?.imageUrls) {
+      existingZimmer.imageUrls.forEach(url => {
+        data.append("ImageUrls", url);
+      });
     }
+
+   if (existingZimmer) {
+    data.append("Id", existingZimmer.zimmerId.toString());
+    data.append("ZimmerId", existingZimmer.zimmerId.toString());
+}
 
     try {
       if (existingZimmer) {
@@ -197,8 +225,15 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
             </div>
 
             <div className="row">
-              <input type="number" className="input-field flex-1" value={formData.latitude} placeholder="קו רוחב" onChange={handleLatChange} />
-              <input type="number" className="input-field flex-1" value={formData.longitude} placeholder="קו אורך" onChange={handleLngChange} />
+              <div className="flex-1">
+                <label className="label-title"> קו רוחב:</label>
+                <input type="number" className="input-field flex-1" value={formData.latitude} placeholder="קו רוחב" onChange={handleLatChange} />
+              </div>
+
+              <div className="flex-1">
+                <label className="label-title"> קו אורך:</label>
+                <input type="number" className="input-field flex-1" value={formData.longitude} placeholder="קו אורך" onChange={handleLngChange} />
+              </div>
             </div>
 
             <div className="row">
@@ -234,7 +269,7 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
 
             <div className="preview-images">
               {previews.map((img, index) => (
-                <img key={index} src={img} alt="preview" className="preview-img" />
+                <img key={index} src={formatImageSrc(img)} alt="preview" className="preview-img" />
               ))}
             </div>
 

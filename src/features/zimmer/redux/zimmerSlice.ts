@@ -13,6 +13,7 @@ export interface Zimmer {
     pricePerNight: number;
     createdAt: string;
     facilities: string;
+    imageUrls?: string[];
     arrImages?: string[];
 }
 
@@ -34,42 +35,42 @@ const zimmerSlice = createSlice({
     name: "zimmer",
     initialState,
     reducers: {
-    addToFavoriteZimmers: (state, action: PayloadAction<Zimmer>) => {
-    const exists = state.listFavoriteZimmers.find(
-        z => z.zimmerId === action.payload.zimmerId
-    );
-    
-    if (!exists) {
-        const limitedZimmer = { 
-            ...action.payload, 
-            arrImages: action.payload.arrImages && action.payload.arrImages.length > 0 
-                ? [action.payload.arrImages[0]] 
-                : [] 
-        };
-        state.listFavoriteZimmers.push(limitedZimmer);
-        try {
+        addToFavoriteZimmers: (state, action: PayloadAction<Zimmer>) => {
+            const exists = state.listFavoriteZimmers.find(
+                z => z.zimmerId === action.payload.zimmerId
+            );
+
+            if (!exists) {
+                const limitedZimmer = {
+                    ...action.payload,
+                    arrImages: action.payload.arrImages && action.payload.arrImages.length > 0
+                        ? [action.payload.arrImages[0]]
+                        : []
+                };
+                state.listFavoriteZimmers.push(limitedZimmer);
+                try {
+                    localStorage.setItem("favoriteZimmers", JSON.stringify(state.listFavoriteZimmers));
+                } catch (e) {
+                    console.error("הזיכרון מלא, לא ניתן לשמור עוד מועדפים", e);
+                }
+            }
+        },
+        removeFromFavoriteZimmers: (state, action: PayloadAction<number>) => {
+            state.listFavoriteZimmers = state.listFavoriteZimmers.filter(
+                z => z.zimmerId !== action.payload
+            );
             localStorage.setItem("favoriteZimmers", JSON.stringify(state.listFavoriteZimmers));
-        } catch (e) {
-            console.error("הזיכרון מלא, לא ניתן לשמור עוד מועדפים", e);
-        }
+        },
+        setSelectedZimmer: (state, action: PayloadAction<Zimmer | null>) => {
+            state.selectedZimmer = action.payload;
+        },
     }
-},
-    removeFromFavoriteZimmers: (state, action: PayloadAction<number>) => {
-        state.listFavoriteZimmers = state.listFavoriteZimmers.filter(
-            z => z.zimmerId !== action.payload
-        );
-        localStorage.setItem("favoriteZimmers", JSON.stringify(state.listFavoriteZimmers));
-    },
-    setSelectedZimmer: (state, action: PayloadAction<Zimmer | null>) => {
-        state.selectedZimmer = action.payload;
-    },
-}
 });
 
-export const { 
-    addToFavoriteZimmers, 
-    removeFromFavoriteZimmers, 
-    setSelectedZimmer 
+export const {
+    addToFavoriteZimmers,
+    removeFromFavoriteZimmers,
+    setSelectedZimmer
 } = zimmerSlice.actions;
 
 export default zimmerSlice.reducer;
