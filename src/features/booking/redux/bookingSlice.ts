@@ -43,6 +43,7 @@ const bookingSlice = createSlice({
       .addMatcher(
         (action) =>
           bookingApi.endpoints.getBookings.matchRejected(action) ||
+          bookingApi.endpoints.getGuestBookings.matchFulfilled(action) ||
           bookingApi.endpoints.getOwnerBookings.matchRejected(action),
         (state) => {
           state.status = "error";

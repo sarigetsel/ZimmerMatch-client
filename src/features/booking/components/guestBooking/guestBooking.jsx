@@ -1,8 +1,8 @@
-import { useGetOwnerBookingsQuery } from "../../redux/bookingApi";
+import { useGetGuestBookingsQuery } from "../../redux/bookingApi";
 import "./guestBooking.css";
 
 export default function MyBookings() {
-  const { data: bookings, isLoading, isError } = useGetOwnerBookingsQuery();
+const { data: bookings, isLoading, isError } = useGetGuestBookingsQuery();
 
   if (isLoading) return <p className="message">טוען הזמנות...</p>;
   if (isError) return <p className="message error">שגיאה בטעינת ההזמנות שלך.</p>;

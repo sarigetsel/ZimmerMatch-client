@@ -19,13 +19,18 @@ export const bookingApi = createApi({
       query: () => "",
       providesTags: ["booking"],
     }),
+  getGuestBookings: builder.query<Booking[], void>({
+    query: () => "/my-bookings", 
+    providesTags: ["booking"],
+  }),
     getBookingById: builder.query<Booking, number>({
-      query: (id) => `/${id}`,
-    }),
-    getOwnerBookings: builder.query<Booking[], void>({
-      query: () => "/my-bookings",
-      providesTags: ["booking"],
-    }),
+    query: (id) => `/${id}`,
+    providesTags: (result, error, id) => [{ type: 'booking', id }],
+  }),
+   getOwnerBookings: builder.query<Booking[], void>({
+    query: () => "/owner-bookings", 
+    providesTags: ["booking"],
+  }),
     addBooking: builder.mutation<Booking, Partial<Booking>>({
       query: (data) => ({
         url: "/",
@@ -55,8 +60,9 @@ export const bookingApi = createApi({
 
 export const {
   useGetBookingsQuery,
-  useGetBookingByIdQuery,
+  useGetGuestBookingsQuery, 
   useGetOwnerBookingsQuery,
+  useGetBookingByIdQuery,
   useAddBookingMutation,
   useUpdateBookingMutation,
   useDeleteBookingMutation,
