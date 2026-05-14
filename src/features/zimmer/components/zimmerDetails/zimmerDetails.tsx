@@ -345,21 +345,24 @@ const facilitiesArray = facilitiesNum > 0
     zimmer={zimmer}
   />
 </div>
-{modalOpen && (
-        <div className="image-modal" onClick={() => setModalOpen(null)}>
-          <img
-            src={`data:image/jpeg;base64,${images[currentImageIndex]}`}
-            className="modal-image"
-            alt="תצוגה מלאה"
-          />
-          <button
-            className="modal-close-btn"
-            onClick={(e) => { e.stopPropagation(); setModalOpen(null); }}
-          >
-            ✕
-          </button>
-        </div>
-      )}
+{modalOpen === 'image' && (
+  <div className="image-modal" onClick={() => setModalOpen(null)}>
+    <img
+      src={`data:image/jpeg;base64,${images[currentImageIndex]}`}
+      className="modal-image"
+      alt="תצוגה מלאה"
+    />
+    <button
+      className="modal-close-btn"
+      onClick={(e) => {
+        e.stopPropagation();
+        setModalOpen(null);
+      }}
+    >
+      ✕
+    </button>
+  </div>
+)}
     </div>
   );
 };

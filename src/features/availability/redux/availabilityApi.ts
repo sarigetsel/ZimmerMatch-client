@@ -40,10 +40,14 @@ export const availabilityApi = createApi({
 
 blockDay: builder.mutation<void, BlockDayDto>({
   query: (data) => ({
-    url: "/",
+    url: "",
     method: "POST",
-    body: data
-  })
+    body: {
+      ...data,
+      availabilityId: 0 
+    }
+  }),
+  invalidatesTags: ["availability"]
 })
 
   })

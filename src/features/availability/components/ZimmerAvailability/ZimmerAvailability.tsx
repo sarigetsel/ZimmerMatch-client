@@ -125,38 +125,35 @@ export default function ZimmerAvailability({ zimmerId, pricePerNight, zimmer }: 
     }
   };
 
-  const blockSelected = async () => {
-    if (!range || !user || user.role !== "Owner") return;
+const blockSelected = async () => {
+  if (!range || !user || user.role !== "Owner") return;
 
-    if (zimmer.ownerId !== user.id) {
-      alert("אין לך אפשרות לחסום ימים בצימר זה. זה לא צימר שלך.");
-      setRange(null);
-      return;
+  const dates = getDateArray(range[0], range[1]);
+
+  try {
+   for (const d of dates) {
+  if (!isPast(d)) {
+    try {
+      await blockDay({
+        zimmerId: zimmerId, 
+        startDate: d.toISOString().split('T')[0], 
+        endDate: d.toISOString().split('T')[0],
+        isBooked: true
+      }).unwrap();
+    } catch (err) {
+      console.error("שגיאה ביום ספציפי:", err);
     }
-
-    const dates = getDateArray(range[0], range[1]);
-
-    for (const d of dates) {
-      if (!isPast(d)) {
-        try {
-          await blockDay({
-            zimmerId,
-            startDate: d.toISOString(),
-            endDate: d.toISOString(),
-            isBooked: true,
-          }).unwrap();
-        } catch (err: unknown) {
-          console.error("שגיאה בעת חסימת יום:", err);
-          alert("שגיאה בחסימת ימים: " + JSON.stringify(err));
-          return;
-        }
-      }
-    }
-
-    await refetch();
-    alert("הימים נחסמו!");
+  }
+}
+    
+    alert("הימים נחסמו בהצלחה!");
     setRange(null);
-  };
+    refetch();
+  } catch (err) {
+    console.error("Detailed Error:", err);
+    alert("חסימה נכשלה. בדקי את ה-Console לפרטים.");
+  }
+};
 
   return (
     <div className="calendar-wrapper">
