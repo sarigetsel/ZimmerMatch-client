@@ -38,6 +38,10 @@ export const zimmerApi = createApi({
     }),
     getCities: builder.query<string[], void>({
       query: () => "cities"
+    }),
+    getSimilarZimmers: builder.query<Zimmer[], number>({
+      query: (id) => `similar/${id}`,
+      providesTags: ["zimmer"]
     })
   }),
 });
@@ -49,6 +53,7 @@ export const {
   useDeleteZimmerMutation,
   useSearchZimmersQuery,
   useGetCitiesQuery,
+  useGetSimilarZimmersQuery,
 } = zimmerApi;
 
 export interface ZimmerSearchDto {

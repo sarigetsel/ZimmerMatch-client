@@ -4,11 +4,14 @@ import "leaflet/dist/leaflet.css";
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetZimmersQuery } from '../../redux/zimmerApi';
+import { useGetSimilarZimmersQuery } from '../../redux/zimmerApi';
+import ZimmerList from "../zimmerList/zimmerList";
 import './zimmerDetails.scss';
 import { FacilityValues, FacilityLabels } from '../../../../common/constants/enums';
 import * as Icons from 'react-icons/fa';
 import ZimmerAvailability from "../../../availability/components/ZimmerAvailability/ZimmerAvailability";
 import AiConcierge from "../../../aiPlanner/components/AiConcierge";
+
 
 interface Zimmer {
   zimmerId: number;
@@ -79,6 +82,7 @@ const ZimmerDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: zimmers, isLoading, isError } = useGetZimmersQuery();
+  const { data: similarZimmers } = useGetSimilarZimmersQuery(Number(id), { skip: !id });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -291,6 +295,13 @@ const ZimmerDetails: React.FC = () => {
           zimmer={zimmer}
         />
       </div>
+
+      {similarZimmers && similarZimmers.length > 0 && (
+        <div className="similar-zimmers-section" style={{ marginTop: '40px', marginBottom: '20px' }}>
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '20px', color: '#1a2b49' }}>צימרים נוספים שיכולים להתאים לכם</h2>
+          <ZimmerList zimmers={similarZimmers} viewType="grid" />
+        </div>
+      )}
 
       {modalOpen === 'image' && (
         <div className="image-modal" onClick={() => setModalOpen(null)}>
