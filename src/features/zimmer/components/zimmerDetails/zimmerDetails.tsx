@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker,useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import React, { useState, useEffect } from 'react';
@@ -8,6 +8,7 @@ import './zimmerDetails.scss';
 import { FacilityValues, FacilityLabels } from '../../../../common/constants/enums';
 import * as Icons from 'react-icons/fa';
 import ZimmerAvailability from "../../../availability/components/ZimmerAvailability/ZimmerAvailability";
+import AiConcierge from "../../../aiPlanner/components/AiConcierge";
 
 interface Zimmer {
   zimmerId: number;
@@ -60,7 +61,6 @@ const yellowIcon = new L.Icon({
 
 const MapResizer = () => {
   const map = useMap();
-  const { useEffect } = React; 
   useEffect(() => {
     setTimeout(() => {
       map.invalidateSize();
@@ -69,75 +69,70 @@ const MapResizer = () => {
   return null;
 };
 
-
 const ZimmerDetails: React.FC = () => {
-const [currentImageIndex, setCurrentImageIndex] = useState(0);
-const [modalOpen, setModalOpen] = useState<string | null>(null);
-const [mapVisible, setMapVisible] = useState(false);
-const [mapType, setMapType] = useState("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [modalOpen, setModalOpen] = useState<string | null>(null);
+  const [mapVisible, setMapVisible] = useState(false);
+  const [mapType, setMapType] = useState("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+  const [chatOpen, setChatOpen] = useState(false); 
 
-const { id } = useParams<{ id: string }>();
-const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { data: zimmers, isLoading, isError } = useGetZimmersQuery();
 
-const { data: zimmers, isLoading, isError } = useGetZimmersQuery();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
-useEffect(() => {
-  window.scrollTo(0, 0);
-}, [id]);
+  if (isLoading) return <div className="loading-container">טוען נתונים...</div>;
+  if (isError || !zimmers) return <div className="error-container">שגיאה בטעינת הנתונים</div>;
 
-if (isLoading) return <div className="loading-container">טוען נתונים...</div>;
-if (isError || !zimmers) return <div className="error-container">שגיאה בטעינת הנתונים</div>;
+  const zimmer: Zimmer | undefined = zimmers.find((z) => Number(z.zimmerId) === Number(id));
 
- const zimmer: Zimmer | undefined = zimmers.find((z) => Number(z.zimmerId) === Number(id));
-
-if (!zimmer) {
-  return (
-    <div className="error-container">
-      <h2>הצימר לא נמצא</h2>
-      <button onClick={() => navigate('/')}>חזרה לדף הבית</button>
-    </div>
-  );
-}
-
-const images = Array.isArray(zimmer.arrImages) ? zimmer.arrImages : [];
-
-const rawFacilities = zimmer.facilities;
-let facilitiesNum = 0;
-
-if (typeof rawFacilities === 'number') {
-  facilitiesNum = rawFacilities;
-} else if (typeof rawFacilities === 'string') {
-  const parsed = parseInt(rawFacilities, 10);
-  if (!isNaN(parsed)) {
-    facilitiesNum = parsed;
-  } else {
-    const facilityNames = rawFacilities.split(',').map(s => s.trim().toLowerCase());
-      
-    Object.entries(FacilityValues).forEach(([key, value]) => {
-      if (isNaN(Number(key)) && facilityNames.includes(key.toLowerCase())) {
-        facilitiesNum |= Number(value);
-      }
-    });
+  if (!zimmer) {
+    return (
+      <div className="error-container">
+        <h2>הצימר לא נמצא</h2>
+        <button onClick={() => navigate('/')}>חזרה לדף הבית</button>
+      </div>
+    );
   }
-}
 
-const facilitiesArray = facilitiesNum > 0
-  ? Object.entries(FacilityValues)
-      .filter(([key, value]) => {
-        const val = Number(value);
-        return isNaN(Number(key)) && val > 0 && (facilitiesNum & val) === val;
-      })
-      .map(([, value]) => ({
-        name: FacilityLabels[Number(value)] || "מתקן",
-        icon: facilitiesIconsMap[Number(value)] || <span>🔹</span>,
-      }))
-  : [];
+  const images = Array.isArray(zimmer.arrImages) ? zimmer.arrImages : [];
+  const rawFacilities = zimmer.facilities;
+  let facilitiesNum = 0;
+
+  if (typeof rawFacilities === 'number') {
+    facilitiesNum = rawFacilities;
+  } else if (typeof rawFacilities === 'string') {
+    const parsed = parseInt(rawFacilities, 10);
+    if (!isNaN(parsed)) {
+      facilitiesNum = parsed;
+    } else {
+      const facilityNames = rawFacilities.split(',').map(s => s.trim().toLowerCase());
+      Object.entries(FacilityValues).forEach(([key, value]) => {
+        if (isNaN(Number(key)) && facilityNames.includes(key.toLowerCase())) {
+          facilitiesNum |= Number(value);
+        }
+      });
+    }
+  }
+
+  const facilitiesArray = facilitiesNum > 0
+    ? Object.entries(FacilityValues)
+        .filter(([key, value]) => {
+          const val = Number(value);
+          return isNaN(Number(key)) && val > 0 && (facilitiesNum & val) === val;
+        })
+        .map(([, value]) => ({
+          name: FacilityLabels[Number(value)] || "מתקן",
+          icon: facilitiesIconsMap[Number(value)] || <span>🔹</span>,
+        }))
+    : [];
 
   return (
     <div className="zimmer-details-container" dir="rtl">
-      <button className="back-btn" onClick={() => navigate(-1)}>
-        חזרה
-      </button>
+      <button className="back-btn" onClick={() => navigate(-1)}>חזרה</button>
 
       <div className="zimmer-main">
         <div className="zimmer-info">
@@ -145,16 +140,13 @@ const facilitiesArray = facilitiesNum > 0
 
           <div className="zimmer-location-block">
             <span className="zimmer-city">📍 {zimmer.city}</span>
-            {zimmer.address && (
-              <span className="zimmer-address">{zimmer.address}</span>
-            )}
+            {zimmer.address && <span className="zimmer-address">{zimmer.address}</span>}
           </div>
 
           <div className="zimmer-price-block">
             <span className="zimmer-price-amount">₪{zimmer.pricePerNight}</span>
             <span className="zimmer-price-label">ללילה</span>
           </div>
-
 
           <div className="zimmer-meta-row">
             <div className="meta-chip">
@@ -190,30 +182,12 @@ const facilitiesArray = facilitiesNum > 0
           {mapVisible && (
             <div className="map-wrapper">
               <div className="map-type-buttons">
-                <button
-                  className="map-btn"
-                  onClick={() => setMapType("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")}
-                >
-                 רגילה
-                </button>
-                <button
-                  className="map-btn"
-                  onClick={() => setMapType("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png")}
-                >
-                   חמה
-                </button>
-                <button
-                  className="map-btn"
-                  onClick={() => setMapType("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png")}
-                >
-                   טופוגרפית
-                </button>
+                <button className="map-btn" onClick={() => setMapType("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")}>רגילה</button>
+                <button className="map-btn" onClick={() => setMapType("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png")}>חמה</button>
+                <button className="map-btn" onClick={() => setMapType("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png")}>טופוגרפית</button>
               </div>
               <div className="zimmer-inline-map">
-                <MapContainer
-                  center={[zimmer.latitude, zimmer.longitude]}
-                  zoom={10}
-                >
+                <MapContainer center={[zimmer.latitude, zimmer.longitude]} zoom={10}>
                   <TileLayer url={mapType} />
                   <Marker position={[zimmer.latitude, zimmer.longitude]} icon={yellowIcon} />
                   <MapResizer />
@@ -256,114 +230,93 @@ const facilitiesArray = facilitiesNum > 0
         </div>
       </div>
 
-<div className="availability-header">
-  <h2 className="availability-title">בדיקת זמינות</h2>
-
-  <div className="contact-trigger-wrapper">
-    <button
-      className={`contact-trigger-card ${modalOpen === 'contact' ? 'open' : ''}`}
-      onClick={() => setModalOpen(modalOpen === 'contact' ? null : 'contact')}
-    >
-      <div className="avatar-ring">
-        <Icons.FaUser />
-      </div>
-
-      <div className="trigger-text">
-        <span className="trigger-label">מארח</span>
-        <span className="trigger-name">
-          {zimmer.owner?.name || 'בעלי הצימר'}
-        </span>
-      </div>
-
-      <Icons.FaChevronDown className="trigger-chevron" />
-    </button>
-
-    {modalOpen === 'contact' && zimmer.owner && (
-      <div className="contact-dropdown-panel">
-        <div className="panel-header">
-          <div className="panel-avatar">
-            {zimmer.owner.name.slice(0, 2)}
-          </div>
-
-          <div>
-            <div className="panel-host-label">מארח הצימר</div>
-            <div className="panel-host-name">
-              {zimmer.owner.name}
-            </div>
-          </div>
-        </div>
-
-        <div className="panel-body">
-          <a
-            className="panel-action phone"
-            href={`tel:${zimmer.owner.phone}`}
+      <div className="availability-header">
+        <h2 className="availability-title">בדיקת זמינות</h2>
+        <div className="contact-trigger-wrapper">
+          <button
+            className={`contact-trigger-card ${modalOpen === 'contact' ? 'open' : ''}`}
+            onClick={() => setModalOpen(modalOpen === 'contact' ? null : 'contact')}
           >
-            <Icons.FaPhoneAlt />
+            <div className="avatar-ring"><Icons.FaUser /></div>
+            <div className="trigger-text">
+              <span className="trigger-label">מארח</span>
+              <span className="trigger-name">{zimmer.owner?.name || 'בעלי הצימר'}</span>
+            </div>
+            <Icons.FaChevronDown className="trigger-chevron" />
+          </button>
 
-            <div className="action-text">
-              <div className="action-label">טלפון</div>
-              <div className="action-number">
-                {zimmer.owner.phone}
+          {modalOpen === 'contact' && zimmer.owner && (
+            <div className="contact-dropdown-panel">
+              <div className="panel-header">
+                <div className="panel-avatar">{zimmer.owner.name.slice(0, 2)}</div>
+                <div>
+                  <div className="panel-host-label">מארח הצימר</div>
+                  <div className="panel-host-name">{zimmer.owner.name}</div>
+                </div>
+              </div>
+              <div className="panel-body">
+                <a className="panel-action phone" href={`tel:${zimmer.owner.phone}`}>
+                  <Icons.FaPhoneAlt />
+                  <div className="action-text">
+                    <div className="action-label">טלפון</div>
+                    <div className="action-number">{zimmer.owner.phone}</div>
+                  </div>
+                  <Icons.FaChevronLeft className="action-arrow" />
+                </a>
+                <div className="panel-divider" />
+                <a
+                  className="panel-action whatsapp"
+                  href={`https://wa.me/972${zimmer.owner.phone.replace(/^0/, '').replace(/-/g, '')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Icons.FaWhatsapp />
+                  <div className="action-text">
+                    <div className="action-label">WhatsApp</div>
+                    <div className="action-number">שלח הודעה</div>
+                  </div>
+                  <Icons.FaChevronLeft className="action-arrow" />
+                </a>
+                <div className="panel-note">בדרך כלל עונה תוך שעה</div>
               </div>
             </div>
-
-            <Icons.FaChevronLeft className="action-arrow" />
-          </a>
-
-          <div className="panel-divider" />
-
-          <a
-            className="panel-action whatsapp"
-            href={`https://wa.me/972${zimmer.owner.phone
-              .replace(/^0/, '')
-              .replace(/-/g, '')}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Icons.FaWhatsapp />
-
-            <div className="action-text">
-              <div className="action-label">WhatsApp</div>
-              <div className="action-number">שלח הודעה</div>
-            </div>
-
-            <Icons.FaChevronLeft className="action-arrow" />
-          </a>
-
-          <div className="panel-note">
-            בדרך כלל עונה תוך שעה
-          </div>
+          )}
         </div>
       </div>
-    )}
-  </div>
-</div>
 
-<div className="availability-section">
-  <ZimmerAvailability
-    zimmerId={zimmer.zimmerId}
-    pricePerNight={zimmer.pricePerNight}
-    zimmer={zimmer}
-  />
-</div>
-{modalOpen === 'image' && (
-  <div className="image-modal" onClick={() => setModalOpen(null)}>
-    <img
-      src={`data:image/jpeg;base64,${images[currentImageIndex]}`}
-      className="modal-image"
-      alt="תצוגה מלאה"
-    />
-    <button
-      className="modal-close-btn"
-      onClick={(e) => {
-        e.stopPropagation();
-        setModalOpen(null);
-      }}
-    >
-      ✕
-    </button>
-  </div>
-)}
+      <div className="availability-section">
+        <ZimmerAvailability
+          zimmerId={zimmer.zimmerId}
+          pricePerNight={zimmer.pricePerNight}
+          zimmer={zimmer}
+        />
+      </div>
+
+      {modalOpen === 'image' && (
+        <div className="image-modal" onClick={() => setModalOpen(null)}>
+          <img src={`data:image/jpeg;base64,${images[currentImageIndex]}`} className="modal-image" alt="תצוגה מלאה" />
+          <button className="modal-close-btn" onClick={(e) => { e.stopPropagation(); setModalOpen(null); }}>✕</button>
+        </div>
+      )}
+
+      <div className="ai-floating-widget">
+        <button className="ai-toggle-btn" onClick={() => setChatOpen(!chatOpen)}>
+          {chatOpen ? "✕" : "התייעצו עם עוזר החופשה האישי שלכם 💬"}
+        </button>
+
+        {chatOpen && (
+          <div className="ai-chat-window-wrapper">
+            <AiConcierge 
+              zimmerData={{ 
+                name: zimmer.nameZimmer, 
+                location: zimmer.city 
+              }} 
+              bookingDates="העונה הנוכחית" 
+            />
+          </div>
+        )}
+      </div>
+
     </div>
   );
 };

@@ -755,3 +755,15 @@
     left: 0;
   }
 }
+.ai-toggle-btn { 
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    width: 100%;             
+    margin: 20px 0;         
+}
+
+.ai-toggle-btn button {
+    float: none; 
+    margin: 0 auto;
+}
