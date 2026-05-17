@@ -52,13 +52,13 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getInitialFacilities = () => {
-    if (!existingZimmer?.facilities) return [];
-    const facilitiesVal = Number(existingZimmer.facilities);
-    if (isNaN(facilitiesVal)) return [];
+  if (!existingZimmer?.facilities) return [];
+  const facilitiesVal = Number(existingZimmer.facilities);
+  if (isNaN(facilitiesVal)) return [];
 
-    return Object.values(FacilityValues)
-      .filter((v) => typeof v === "number" && v > 0 && (facilitiesVal & v) === v) as number[];
-  };
+  const validFacilityNumbers = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536];
+  return validFacilityNumbers.filter((v) => (facilitiesVal & v) === v);
+};
 
   const [formData, setFormData] = useState({
     ownerId: existingZimmer?.ownerId || 0,
@@ -147,15 +147,11 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
     data.append("PricePerNight", formData.pricePerNight.toString());
     data.append("OwnerId", formData.ownerId.toString());
 
-   formData.facilities.forEach((facilityValue) => {
-    const facilityName = FacilityValues[facilityValue];
-    
-    if (facilityName !== undefined) {
-        data.append("Facilities", String(facilityName));
-    } else {
-        console.warn(`Value ${facilityValue} not found in FacilityValues`);
-    }
-});
+const combinedFacilitiesValue = formData.facilities.reduce((total, currentVal) => {
+    return total | currentVal;
+}, 0);
+
+data.append("Facilities", combinedFacilitiesValue.toString());
 
     const createdAt = existingZimmer?.createdAt 
     ? new Date(existingZimmer.createdAt).toISOString().split('.')[0] 
