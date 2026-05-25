@@ -318,11 +318,8 @@ const ZimmerDetails: React.FC = () => {
         {chatOpen && (
           <div className="ai-chat-window-wrapper">
             <AiConcierge 
-              zimmerData={{ 
-                name: zimmer.nameZimmer, 
-                location: zimmer.city 
-              }} 
-              bookingDates="העונה הנוכחית" 
+             zimmerData={zimmer} 
+            bookingDates="העונה הנוכחית" 
             />
           </div>
         )}

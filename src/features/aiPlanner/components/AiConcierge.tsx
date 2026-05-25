@@ -1,10 +1,27 @@
 import React, { useState, useRef, useEffect } from "react";
 import { askAiPlanner } from "../redux/api";
+import { FacilityValues } from "../../../common/constants/enums";
 import "./AiConcierge.scss";
 
+
 interface ZimmerData {
-  name: string;
-  location: string;
+  zimmerId: number;
+  ownerId: number;
+  nameZimmer: string;
+  city: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  numRooms: number;
+  pricePerNight: number;
+  description: string;
+  createdAt: string;
+  arrImages?: string[];
+  facilities?: number | string;
+  owner?: {
+    name: string;
+    phone: string;
+  };
 }
 
 interface AiConciergeProps {
@@ -41,13 +58,12 @@ export default function AiConcierge({ zimmerData, bookingDates }: AiConciergePro
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
-
-  const sendMessage = async (text?: string) => {
+const sendMessage = async (text?: string) => {
     const msg = (text || input).trim();
     if (!msg || loading) return; 
 
     const contextMsg = messages.length === 0 
-      ? `צימר: ${zimmerData.name}, מיקום: ${zimmerData.location}, תאריכים: ${bookingDates}. ${msg}`
+      ? `[תאריכי חופשה מבוקשים: ${bookingDates}]. ${msg}`
       : msg;
 
     setInput("");
@@ -56,7 +72,35 @@ export default function AiConcierge({ zimmerData, bookingDates }: AiConciergePro
     setLoading(true);
 
     try {
-      const data = await askAiPlanner(contextMsg, history, ""); 
+      const rawFacilities = zimmerData.facilities;
+      let facilitiesNum = 0;
+
+      if (typeof rawFacilities === 'number') {
+        facilitiesNum = rawFacilities;
+      } else if (typeof rawFacilities === 'string') {
+        const parsed = parseInt(rawFacilities, 10);
+        if (!isNaN(parsed)) {
+          facilitiesNum = parsed;
+        } else {
+          const facilityNames = rawFacilities.split(',').map(s => s.trim().toLowerCase());
+          Object.entries(FacilityValues).forEach(([key, value]) => {
+            if (isNaN(Number(key)) && facilityNames.includes(key.toLowerCase())) {
+              facilitiesNum |= Number(value);
+            }
+          });
+        }
+      }
+
+      const safeZimmerData = {
+        ...zimmerData,
+        facilities: facilitiesNum,
+        owner: zimmerData.owner ? {
+          name: zimmerData.owner.name,
+          phone: zimmerData.owner.phone
+        } : undefined
+      };
+
+      const data = await askAiPlanner(contextMsg, history, safeZimmerData); 
       
       const replyText = data?.reply || (typeof data === 'string' ? data : "סיימתי לבדוק עבורך!");
       
@@ -85,7 +129,7 @@ export default function AiConcierge({ zimmerData, bookingDates }: AiConciergePro
         <div className="bot-avatar">🏖️</div>
         <div className="bot-info">
           <h3>הקונסיירז' האישי שלך</h3>
-          <p>מוכן לעזור לך לתכנן את החופשה ב{zimmerData.name}</p>
+          <p>מוכן לעזור לך לתכנן את החופשה ב{zimmerData.nameZimmer}</p>
         </div>
       </div>
 
@@ -115,7 +159,7 @@ export default function AiConcierge({ zimmerData, bookingDates }: AiConciergePro
         <input 
           value={input} 
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
-          placeholder="מה בא לך לדעת על הצימרים המטורפים של Oppa?..." 
+          placeholder={`מה בא לך לדעת על הצימרים של ${zimmerData.nameZimmer}?...`} 
           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === 'Enter') sendMessage();
           }}

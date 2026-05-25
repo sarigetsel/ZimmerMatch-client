@@ -8,15 +8,31 @@ interface ChatResponse {
     updatedHistory: ChatHistoryItem[];
 }
 
+export interface ZimmerDetailsDto {
+    zimmerId: number;
+    ownerId: number;
+    nameZimmer: string;
+    city: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    numRooms: number;
+    pricePerNight: number;
+    description: string;
+    createdAt: string;
+    arrImages?: string[];
+    facilities?: number | string;
+}
+
 export const askAiPlanner = async (
     message: string, 
     history: ChatHistoryItem[], 
-    token: string
+    zimmerData: ZimmerDetailsDto, 
+    token?: string
 ): Promise<ChatResponse> => {
     
-    // מיפוי ההיסטוריה בצורה מדויקת עם אותיות גדולות, תואם ב-100% למחלקת ChatMessage ב-C#
     const formattedHistory = (history || []).map(item => ({
-        Role: item.role === "model" ? "model" : "user", // התאמה לערכי ה-Role
+        Role: item.role === "model" ? "model" : "user", 
         Text: item.parts && item.parts.length > 0 ? item.parts[0].text : ""
     }));
 
@@ -24,12 +40,12 @@ export const askAiPlanner = async (
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
+            ...(token && { "Authorization": `Bearer ${token}` })
         },
-        // בניית האובייקט עם אותיות גדולות בהתחלה (Message, History) תואם ל-UserRequest
         body: JSON.stringify({ 
             Message: message, 
-            History: formattedHistory 
+            History: formattedHistory,
+            ZimmerDetails: zimmerData
         })
     });
 
