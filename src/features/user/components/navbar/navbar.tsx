@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { type RootState } from '../../../../app/store';
 import { logout } from '../../redux/userSlice';
 import LoginModal from '.././loginModal/loginModal';
+import { useModal } from '../../../../hooks/useModal';
 import './Navbar.scss';
 
 const Navbar = () => {
@@ -11,7 +12,7 @@ const Navbar = () => {
   const { listFavoriteZimmers } = useSelector((state: RootState) => state.zimmerState);  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [isModalOpen, setModalOpen] = useState(false);
+  const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal(false);
   const [modalType, setModalType] = useState<'login' | 'register'>('login');
   const [scrolled, setScrolled] = useState(false);
 
@@ -21,8 +22,8 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleOpenLogin = () => { setModalType('login'); setModalOpen(true); };
-  const handleOpenRegister = () => { setModalType('register'); setModalOpen(true); };
+  const handleOpenLogin = () => { setModalType('login'); openModal(); };
+  const handleOpenRegister = () => { setModalType('register'); openModal(); };
 
   return (
     <>
@@ -79,10 +80,10 @@ const Navbar = () => {
       </nav>
 
       <LoginModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        type={modalType}
-      />
+       isOpen={isModalOpen}
+       onClose={closeModal}
+       type={modalType}
+       />
     </>
   );
 };

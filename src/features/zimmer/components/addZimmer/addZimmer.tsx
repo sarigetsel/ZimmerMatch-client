@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
+import { useForm } from "react-hook-form";
 import { useAddZimmerMutation, useUpdateZimmerMutation } from "../../redux/zimmerApi";
 import { FacilityValues, FacilityLabels } from "../../../../common/constants/enums";
 import L from "leaflet";
@@ -28,6 +29,19 @@ interface AddZimmerProps {
   existingZimmer?: Zimmer;
 }
 
+interface ZimmerFormData {
+  ownerId: number;
+  nameZimmer: string;
+  description: string;
+  city: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  numRooms: number;
+  pricePerNight: number;
+  facilities: number[];
+}
+
 const MapResizer = () => {
   const map = useMap();
   useEffect(() => {
@@ -52,26 +66,32 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getInitialFacilities = () => {
-  if (!existingZimmer?.facilities) return [];
-  const facilitiesVal = Number(existingZimmer.facilities);
-  if (isNaN(facilitiesVal)) return [];
+    if (!existingZimmer?.facilities) return [];
+    const facilitiesVal = Number(existingZimmer.facilities);
+    if (isNaN(facilitiesVal)) return [];
 
-  const validFacilityNumbers = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536];
-  return validFacilityNumbers.filter((v) => (facilitiesVal & v) === v);
-};
+    const validFacilityNumbers = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536];
+    return validFacilityNumbers.filter((v) => (facilitiesVal & v) === v);
+  };
 
-  const [formData, setFormData] = useState({
-    ownerId: existingZimmer?.ownerId || 0,
-    nameZimmer: existingZimmer?.nameZimmer || "",
-    description: existingZimmer?.description || "",
-    city: existingZimmer?.city || "",
-    address: existingZimmer?.address || "",
-    latitude: existingZimmer?.latitude || 32.0853,
-    longitude: existingZimmer?.longitude || 34.7818,
-    numRooms: existingZimmer?.numRooms || 1,
-    pricePerNight: existingZimmer?.pricePerNight || 0,
-    facilities: getInitialFacilities(),
+  const { register, handleSubmit, setValue, watch } = useForm<ZimmerFormData>({
+    defaultValues: {
+      ownerId: existingZimmer?.ownerId || 0,
+      nameZimmer: existingZimmer?.nameZimmer || "",
+      description: existingZimmer?.description || "",
+      city: existingZimmer?.city || "",
+      address: existingZimmer?.address || "",
+      latitude: existingZimmer?.latitude || 32.0853,
+      longitude: existingZimmer?.longitude || 34.7818,
+      numRooms: existingZimmer?.numRooms || 1,
+      pricePerNight: existingZimmer?.pricePerNight || 0,
+      facilities: getInitialFacilities(),
+    }
   });
+
+  const watchedLatitude = watch("latitude");
+  const watchedLongitude = watch("longitude");
+  const watchedFacilities = watch("facilities");
 
   const [previews, setPreviews] = useState<(number[] | string)[]>(existingZimmer?.arrImages || []);
   const [newFiles, setNewFiles] = useState<File[]>([]);
@@ -79,32 +99,20 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
   const LocationPicker = () => {
     useMapEvents({
       click(e) {
-        setFormData((prev) => ({
-          ...prev,
-          latitude: e.latlng.lat,
-          longitude: e.latlng.lng,
-        }));
+        setValue("latitude", e.latlng.lat);
+        setValue("longitude", e.latlng.lng);
       },
     });
-    return <Marker position={[formData.latitude, formData.longitude]} icon={markerIcon} />;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "number" ? (value === "" ? 0 : Number(value)) : value,
-    }));
+    return <Marker position={[watchedLatitude, watchedLongitude]} icon={markerIcon} />;
   };
 
   const handleFacilityToggle = (value: number) => {
-    setFormData((prev) => {
-      const isSelected = prev.facilities.includes(value);
-      return {
-        ...prev,
-        facilities: isSelected ? prev.facilities.filter((id) => id !== value) : [...prev.facilities, value],
-      };
-    });
+    const isSelected = watchedFacilities.includes(value);
+    const updatedFacilities = isSelected
+      ? watchedFacilities.filter((id) => id !== value)
+      : [...watchedFacilities, value];
+    
+    setValue("facilities", updatedFacilities);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,71 +125,54 @@ export const AddZimmer = ({ onClose, existingZimmer }: AddZimmerProps) => {
     }
   };
 
-  const handleLatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      latitude: value === "" ? prev.latitude : Number(value),
-    }));
-  };
+  const onFormSubmit = async (data: ZimmerFormData) => {
+    const formDataDto = new FormData();
 
-  const handleLngChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      longitude: value === "" ? prev.longitude : Number(value),
-    }));
-  };
+    formDataDto.append("NameZimmer", data.nameZimmer);
+    formDataDto.append("Description", data.description || "");
+    formDataDto.append("City", data.city || "");
+    formDataDto.append("Address", data.address || "");
+    formDataDto.append("Latitude", data.latitude.toString());
+    formDataDto.append("Longitude", data.longitude.toString());
+    formDataDto.append("NumRooms", data.numRooms.toString());
+    formDataDto.append("PricePerNight", data.pricePerNight.toString());
+    formDataDto.append("OwnerId", data.ownerId.toString());
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const data = new FormData();
+    const combinedFacilitiesValue = data.facilities.reduce((total, currentVal) => {
+      return total | currentVal;
+    }, 0);
 
-    data.append("NameZimmer", formData.nameZimmer);
-    data.append("Description", formData.description || "");
-    data.append("City", formData.city || "");
-    data.append("Address", formData.address || "");
-    data.append("Latitude", formData.latitude.toString());
-    data.append("Longitude", formData.longitude.toString());
-    data.append("NumRooms", formData.numRooms.toString());
-    data.append("PricePerNight", formData.pricePerNight.toString());
-    data.append("OwnerId", formData.ownerId.toString());
-
-const combinedFacilitiesValue = formData.facilities.reduce((total, currentVal) => {
-    return total | currentVal;
-}, 0);
-
-data.append("Facilities", combinedFacilitiesValue.toString());
+    formDataDto.append("Facilities", combinedFacilitiesValue.toString());
 
     const createdAt = existingZimmer?.createdAt 
-    ? new Date(existingZimmer.createdAt).toISOString().split('.')[0] 
-    : new Date().toISOString().split('.')[0];
+      ? new Date(existingZimmer.createdAt).toISOString().split('.')[0] 
+      : new Date().toISOString().split('.')[0];
 
-    data.append("CreatedAt", createdAt);
+    formDataDto.append("CreatedAt", createdAt);
 
     if (newFiles.length > 0) {
       newFiles.forEach((file) => {
-        data.append("ImageFiles", file);
+        formDataDto.append("ImageFiles", file);
       });
     }
 
     if (existingZimmer?.imageUrls) {
       existingZimmer.imageUrls.forEach(url => {
-        data.append("ImageUrls", url);
+        formDataDto.append("ImageUrls", url);
       });
     }
 
-   if (existingZimmer) {
-    data.append("Id", existingZimmer.zimmerId.toString());
-    data.append("ZimmerId", existingZimmer.zimmerId.toString());
-}
+    if (existingZimmer) {
+      formDataDto.append("Id", existingZimmer.zimmerId.toString());
+      formDataDto.append("ZimmerId", existingZimmer.zimmerId.toString());
+    }
 
     try {
       if (existingZimmer) {
-        await updateZimmer({ id: existingZimmer.zimmerId, data }).unwrap();
+        await updateZimmer({ id: existingZimmer.zimmerId, data: formDataDto }).unwrap();
         alert("הצימר עודכן בהצלחה!");
       } else {
-        await addZimmer(data).unwrap();
+        await addZimmer(formDataDto).unwrap();
         alert("הצימר נוסף בהצלחה!");
       }
       onClose();
@@ -200,19 +191,20 @@ data.append("Facilities", combinedFacilitiesValue.toString());
             {existingZimmer ? "עריכת צימר" : "הוספת צימר חדש"}
           </h2>
 
-          <form onSubmit={handleSubmit} className="form-container">
-            <input name="nameZimmer" className="input-field" value={formData.nameZimmer} placeholder="שם הצימר" onChange={handleChange} required />
-            <textarea name="description" className="input-field" value={formData.description} placeholder="תיאור" onChange={handleChange} rows={3} />
+          <form onSubmit={handleSubmit(onFormSubmit)} className="form-container">
+            
+            <input className="input-field" placeholder="שם הצימר" {...register("nameZimmer", { required: true })} />
+            <textarea className="input-field" placeholder="תיאור" rows={3} {...register("description")} />
 
             <div className="row">
-              <input name="city" className="input-field flex-1" value={formData.city} placeholder="עיר" onChange={handleChange} required />
-              <input name="address" className="input-field flex-1" value={formData.address} placeholder="כתובת" onChange={handleChange} />
+              <input className="input-field flex-1" placeholder="עיר" {...register("city", { required: true })} />
+              <input className="input-field flex-1" placeholder="כתובת" {...register("address")} />
             </div>
 
             <div className="map-wrapper">
               <label className="label-title">בחר מיקום על המפה:</label>
               <div className="map-container">
-                <MapContainer center={[formData.latitude, formData.longitude]} zoom={13} scrollWheelZoom={false}>
+                <MapContainer center={[watchedLatitude, watchedLongitude]} zoom={13} scrollWheelZoom={false}>
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <LocationPicker />
                   <MapResizer />
@@ -223,23 +215,23 @@ data.append("Facilities", combinedFacilitiesValue.toString());
             <div className="row">
               <div className="flex-1">
                 <label className="label-title"> קו רוחב:</label>
-                <input type="number" className="input-field flex-1" value={formData.latitude} placeholder="קו רוחב" onChange={handleLatChange} />
+                <input type="number" step="any" className="input-field flex-1" placeholder="קו רוחב" {...register("latitude", { valueAsNumber: true })} />
               </div>
 
               <div className="flex-1">
                 <label className="label-title"> קו אורך:</label>
-                <input type="number" className="input-field flex-1" value={formData.longitude} placeholder="קו אורך" onChange={handleLngChange} />
+                <input type="number" step="any" className="input-field flex-1" placeholder="קו אורך" {...register("longitude", { valueAsNumber: true })} />
               </div>
             </div>
 
             <div className="row">
               <div className="flex-1">
                 <label className="label-title">מספר חדרים:</label>
-                <input name="numRooms" type="number" className="input-field" value={formData.numRooms} onChange={handleChange} />
+                <input type="number" className="input-field" {...register("numRooms", { valueAsNumber: true })} />
               </div>
               <div className="flex-1">
                 <label className="label-title">מחיר ללילה:</label>
-                <input name="pricePerNight" type="number" className="input-field" value={formData.pricePerNight} placeholder="מחיר" onChange={handleChange} required />
+                <input type="number" className="input-field" placeholder="מחיר" {...register("pricePerNight", { required: true, valueAsNumber: true })} />
               </div>
             </div>
 
@@ -250,7 +242,7 @@ data.append("Facilities", combinedFacilitiesValue.toString());
                   const val = value as number;
                   return (
                     <label key={val} className="facility-checkbox-label">
-                      <input type="checkbox" checked={formData.facilities.includes(val)} onChange={() => handleFacilityToggle(val)} />
+                      <input type="checkbox" checked={watchedFacilities.includes(val)} onChange={() => handleFacilityToggle(val)} />
                       {FacilityLabels[val] || name}
                     </label>
                   );
