@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLoginMutation, useRegisterMutation } from '../../redux/userApi';
 import { useDispatch } from 'react-redux';
 import { setAuth } from '../../redux/userSlice';
-import './LoginModal.scss';
+import './loginModal.scss';
 
 interface LoginModalProps {
   isOpen: boolean;

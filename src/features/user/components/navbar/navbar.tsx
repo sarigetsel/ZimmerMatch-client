@@ -5,7 +5,7 @@ import { type RootState } from '../../../../app/store';
 import { logout } from '../../redux/userSlice';
 import LoginModal from '.././loginModal/loginModal';
 import { useModal } from '../../../../hooks/useModal';
-import './Navbar.scss';
+import './navbar.scss';
 
 const Navbar = () => {
   const { currentUser } = useSelector((state: RootState) => state.user);
