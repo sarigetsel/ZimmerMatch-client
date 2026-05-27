@@ -70,7 +70,7 @@ const Footer: React.FC = () => (
 
 const Home: React.FC = () => {
   const [searchParams, setSearchParams] = useState<ZimmerSearchDto>({});
-  const { data: zimmers, isLoading } = useSearchZimmersQuery(searchParams);
+  const { data: zimmers, isLoading, isFetching } = useSearchZimmersQuery(searchParams);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const mapRef    = useRef<HTMLDivElement>(null);
@@ -116,7 +116,7 @@ const Home: React.FC = () => {
               <span>חפשו</span> את הצימר שלכם
             </h1>
             <p className="hero-subtitle">מאות צימרים ברחבי הארץ — מהגולן ועד אילת</p>
-            <ZimmerSearch onSearchChange={handleSearchChange} onToggleMap={scrollToMap} />
+            <ZimmerSearch onSearchChange={handleSearchChange} onToggleMap={scrollToMap} isLoading={isLoading || isFetching}/>
           </div>
         </section>
 

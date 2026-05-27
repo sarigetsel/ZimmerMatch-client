@@ -58,7 +58,7 @@ export default function AiConcierge({ zimmerData, bookingDates }: AiConciergePro
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
-const sendMessage = async (text?: string) => {
+  const sendMessage = async (text?: string) => {
     const msg = (text || input).trim();
     if (!msg || loading) return; 
 

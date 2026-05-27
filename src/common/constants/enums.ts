@@ -40,19 +40,4 @@ export const FacilityLabels: Record<number, string> = {
     [FacilityValues.Sauna]: "סאונה",
 };
 
-/*
-export const RoleValues = {
-    Guest: 0,
-    Owner: 1,
-    Admin: 2
-} as const;
-
-export const RoleLabels: Record<number, string> = {
-    [RoleValues.Guest]: "אורח",
-    [RoleValues.Owner]: "בעל צימר",
-    [RoleValues.Admin]: "מנהל מערכת"
-};
-
-export type RoleType = typeof RoleValues[keyof typeof RoleValues];*/
-
 export type FacilityType = typeof FacilityValues[keyof typeof FacilityValues];

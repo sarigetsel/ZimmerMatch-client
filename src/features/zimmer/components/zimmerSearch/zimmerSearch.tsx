@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { useGetCitiesQuery, ZimmerSearchDto } from "../../redux/zimmerApi";
 import Slider from "rc-slider";
+import { CircularProgress } from "@mui/material";
 import "rc-slider/assets/index.css";
 import "./zimmerSearch.scss";
 
 interface ZimmerSearchProps {
   onSearchChange: (params: ZimmerSearchDto) => void;
   onToggleMap: () => void;
+  isLoading?: boolean;
 }
 
-const ZimmerSearch: React.FC<ZimmerSearchProps> = ({ onSearchChange, onToggleMap }) => {
+const ZimmerSearch: React.FC<ZimmerSearchProps> = ({ onSearchChange, onToggleMap, isLoading = false }) => {
   const [searchParams, setSearchParams] = useState({
     searchText: "",
     city: "",
@@ -124,7 +126,9 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
           </div>
           <div className="search-action-btns">
             <button className="map-btn" onClick={onToggleMap}>🗺️ מפה</button>
-            <button className="search-btn" onClick={handleExecuteSearch}>🔍 חפש</button>
+            <button className="search-btn" onClick={handleExecuteSearch} disabled={isLoading}>
+           {isLoading ? <CircularProgress size={20} color="inherit" /> : "🔍 חפש"}
+           </button>
           </div>
         </div>
       </div>
